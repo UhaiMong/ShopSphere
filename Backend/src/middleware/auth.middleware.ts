@@ -1,0 +1,77 @@
+import { Request, Response, NextFunction } from "express";
+import jwt from "jsonwebtoken";
+import { env } from "../config/env.config";
+import { ApiError } from "../utils/ApiError";
+import { IUserPayload, UserRole } from "../types";
+
+// ─── Protect ───────────────────────────────────────────────────────────────────
+// Verifies the Bearer token in Authorization header.
+// Attaches decoded payload to req.user for downstream use.
+
+export const protect = (
+  req: Request,
+  _res: Response,
+  next: NextFunction,
+): void => {
+  const authHeader = req.headers.authorization;
+
+  if (!authHeader?.startsWith("Bearer ")) {
+    return next(ApiError.unauthorized("No token provided"));
+  }
+
+  const token = authHeader.split(" ")[1];
+
+  try {
+    const decoded = jwt.verify(token, env.JWT_ACCESS_SECRET) as IUserPayload;
+    req.user = decoded;
+    next();
+  } catch {
+    // TokenExpiredError and JsonWebTokenError are handled by error middleware
+    next(ApiError.unauthorized("Invalid or expired token"));
+  }
+};
+
+// ─── requireRole ──────────────────────────────────────────────────────────────
+// RBAC guard. Always chain AFTER protect().
+//
+// Usage:
+//   router.delete('/products/:id', protect, requireRole('admin'), ...)
+
+export const requireRole =
+  (...roles: UserRole[]) =>
+  (req: Request, _res: Response, next: NextFunction): void => {
+    if (!req.user) {
+      return next(ApiError.unauthorized());
+    }
+    if (!roles.includes(req.user.role)) {
+      return next(
+        ApiError.forbidden(
+          `Role '${req.user.role}' is not authorized. Required: ${roles.join(" | ")}`,
+        ),
+      );
+    }
+    next();
+  };
+
+// ─── optionalAuth ──────────────────────────────────────────────────────────────
+// Attaches user to req IF a valid token is present.
+// Does NOT reject unauthenticated requests — use for public routes
+// where behavior changes based on authentication (e.g. wishlist status on product).
+
+export const optionalAuth = (
+  req: Request,
+  _res: Response,
+  next: NextFunction,
+): void => {
+  const authHeader = req.headers.authorization;
+  if (!authHeader?.startsWith("Bearer ")) return next();
+
+  const token = authHeader.split(" ")[1];
+  try {
+    const decoded = jwt.verify(token, env.JWT_ACCESS_SECRET) as IUserPayload;
+    req.user = decoded;
+  } catch {
+    // Silently ignore invalid tokens for optional auth
+  }
+  next();
+};
