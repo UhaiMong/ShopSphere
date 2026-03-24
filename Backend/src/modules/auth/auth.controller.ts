@@ -12,13 +12,7 @@ import {
   ChangePasswordInput,
 } from "./auth.validator";
 
-// ─── Auth Controller ──────────────────────────────────────────────────────────
-// Controllers are deliberately thin — they handle HTTP concerns only:
-//   • Extract validated data from req
-//   • Call the service
-//   • Set cookies / headers
-//   • Send the response
-// All business logic lives in auth.service.ts
+// Auth Controller
 
 export const authController = {
   // POST /auth/register

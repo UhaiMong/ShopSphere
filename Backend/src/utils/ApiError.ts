@@ -1,7 +1,4 @@
-// ─── ApiError ──────────────────────────────────────────────────────────────────
-// Extends native Error with HTTP status, error code, and operational flag.
-// "operational" = expected/known errors (validation, not found, unauthorized)
-// "non-operational" = unexpected bugs — these get logged and trigger alerts.
+//  ApiError
 
 export class ApiError extends Error {
   public readonly statusCode: number;
@@ -21,11 +18,10 @@ export class ApiError extends Error {
     this.code = code;
     this.errors = errors;
     this.isOperational = isOperational;
-    // Maintain proper stack trace in V8
     Error.captureStackTrace(this, this.constructor);
   }
 
-  // ─── Factory Helpers ────────────────────────────────────────────────────────
+  //  Factory Helpers
   static badRequest(message: string, errors?: unknown[]): ApiError {
     return new ApiError(400, message, "BAD_REQUEST", errors);
   }

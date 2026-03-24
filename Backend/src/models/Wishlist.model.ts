@@ -1,7 +1,6 @@
 import mongoose, { Schema, Model, Document } from "mongoose";
-// ═══════════════════════════════════════════════════════════════════════════════
+
 // WISHLIST MODEL
-// ═══════════════════════════════════════════════════════════════════════════════
 
 export interface IWishlist extends Document {
   user: mongoose.Types.ObjectId;

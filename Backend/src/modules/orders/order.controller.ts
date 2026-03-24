@@ -12,7 +12,7 @@ import { OrderStatus } from "../../types";
 import { z } from "zod";
 import { Cart } from "@/models/Cart.model";
 
-// ─── Validators ───────────────────────────────────────────────────────────────
+// Validators
 const addressSchema = z.object({
   fullName: z.string().min(2),
   phone: z.string().min(7),
@@ -43,20 +43,14 @@ const updateOrderStatusSchema = z.object({
   note: z.string().max(300).optional(),
 });
 
-// ─── Order Service ────────────────────────────────────────────────────────────
+// Order Service
 const CANCELLABLE_STATUSES: OrderStatus[] = ["pending", "confirmed"];
 
 const SHIPPING_FEE = 100; // ৳1.00 in cents; replace with real shipping logic
 const TAX_RATE = 0; // Set your tax rate here
 
 export const orderService = {
-  // ── createFromCart ──────────────────────────────────────────────────────────
-  // Uses a Mongoose session (transaction) to atomically:
-  //   1. Read and validate the cart
-  //   2. Check stock for every item
-  //   3. Deduct stock
-  //   4. Create the order
-  //   5. Clear the cart
+  //  createFromCart
   async createFromCart(
     userId: string,
     input: z.infer<typeof createOrderSchema>,
@@ -157,7 +151,7 @@ export const orderService = {
     }
   },
 
-  // ── getUserOrders ───────────────────────────────────────────────────────────
+  // getUserOrders
   async getUserOrders(userId: string, query: Record<string, unknown>) {
     const { page, limit, skip } = parsePagination(query);
     const filter: Record<string, unknown> = { user: userId };
@@ -171,7 +165,7 @@ export const orderService = {
     return { orders, pagination: getPaginationMeta(total, page, limit) };
   },
 
-  // ── getOrderById ─────────────────────────────────────────────────────────────
+  //  getOrderById
   async getOrderById(orderId: string, userId?: string) {
     const filter: Record<string, unknown> = { _id: orderId };
     if (userId) filter.user = userId; // Users can only see their own orders
@@ -181,7 +175,7 @@ export const orderService = {
     return order;
   },
 
-  // ── cancelOrder ─────────────────────────────────────────────────────────────
+  //  cancelOrder
   async cancelOrder(orderId: string, userId: string) {
     const order = await Order.findOne({ _id: orderId, user: userId });
     if (!order) throw ApiError.notFound("Order");
@@ -223,7 +217,7 @@ export const orderService = {
     }
   },
 
-  // ── updateStatus (admin) ─────────────────────────────────────────────────────
+  // updateStatus (admin)
   async updateStatus(
     orderId: string,
     status: OrderStatus,
@@ -250,7 +244,7 @@ export const orderService = {
     return order;
   },
 
-  // ── getAllOrders (admin) ─────────────────────────────────────────────────────
+  // getAllOrders (admin)
   async getAllOrders(query: Record<string, unknown>) {
     const { page, limit, skip } = parsePagination(query);
     const filter: Record<string, unknown> = {};
@@ -278,7 +272,7 @@ export const orderService = {
   },
 };
 
-// ─── Controller ───────────────────────────────────────────────────────────────
+// Controller
 const orderController = {
   create: catchAsync(async (req: Request, res: Response) => {
     const order = await orderService.createFromCart(req.user!._id, req.body);
@@ -303,14 +297,14 @@ const orderController = {
     ApiResponse.success(res, order, "Order cancelled successfully");
   }),
 
-  // ── Admin ──────────────────────────────────────────────────────────────────
+  //  Admin
   adminGetAll: catchAsync(async (req: Request, res: Response) => {
     const { orders, pagination } = await orderService.getAllOrders(req.query);
     ApiResponse.paginated(res, orders, pagination);
   }),
 
   adminGetOne: catchAsync(async (req: Request, res: Response) => {
-    const order = await orderService.getOrderById(req.params.id); // No user filter
+    const order = await orderService.getOrderById(req.params.id);
     ApiResponse.success(res, order);
   }),
 
@@ -328,7 +322,7 @@ const orderController = {
   }),
 };
 
-// ─── Router ───────────────────────────────────────────────────────────────────
+// Router
 export const orderRouter = Router();
 
 // User routes

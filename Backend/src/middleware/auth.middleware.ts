@@ -4,9 +4,7 @@ import { env } from "../config/env.config";
 import { ApiError } from "../utils/ApiError";
 import { IUserPayload, UserRole } from "../types";
 
-// ─── Protect ───────────────────────────────────────────────────────────────────
-// Verifies the Bearer token in Authorization header.
-// Attaches decoded payload to req.user for downstream use.
+//  Protect
 
 export const protect = (
   req: Request,
@@ -26,12 +24,11 @@ export const protect = (
     req.user = decoded;
     next();
   } catch {
-    // TokenExpiredError and JsonWebTokenError are handled by error middleware
     next(ApiError.unauthorized("Invalid or expired token"));
   }
 };
 
-// ─── requireRole ──────────────────────────────────────────────────────────────
+//  requireRole
 // RBAC guard. Always chain AFTER protect().
 //
 // Usage:
@@ -53,10 +50,7 @@ export const requireRole =
     next();
   };
 
-// ─── optionalAuth ──────────────────────────────────────────────────────────────
-// Attaches user to req IF a valid token is present.
-// Does NOT reject unauthenticated requests — use for public routes
-// where behavior changes based on authentication (e.g. wishlist status on product).
+// optionalAuth
 
 export const optionalAuth = (
   req: Request,
@@ -71,7 +65,7 @@ export const optionalAuth = (
     const decoded = jwt.verify(token, env.JWT_ACCESS_SECRET) as IUserPayload;
     req.user = decoded;
   } catch {
-    // Silently ignore invalid tokens for optional auth
+    // Ignore invalide tokens for optional auth
   }
   next();
 };

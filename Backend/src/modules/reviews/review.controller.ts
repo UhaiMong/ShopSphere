@@ -11,9 +11,7 @@ import { parsePagination, getPaginationMeta } from "../../utils/ApiResponse";
 import { z } from "zod";
 import { Review } from "@/models/Review.model";
 
-// ═══════════════════════════════════════════════════════════════════════════════
 // REVIEWS
-// ═══════════════════════════════════════════════════════════════════════════════
 
 const createReviewSchema = z.object({
   rating: z.number().int().min(1).max(5),

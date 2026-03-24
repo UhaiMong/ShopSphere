@@ -5,9 +5,7 @@ import path from "path";
 // Load .env from project root
 dotenv.config({ path: path.resolve(process.cwd(), ".env") });
 
-// ─── Zod Schema ────────────────────────────────────────────────────────────────
-// All env vars are validated at startup — if anything is missing, the server
-// refuses to start with a clear error message instead of crashing at runtime.
+// Zod Schema
 const envSchema = z.object({
   NODE_ENV: z
     .enum(["development", "test", "production"])
@@ -28,7 +26,7 @@ const envSchema = z.object({
   JWT_REFRESH_EXPIRE: z.string().default("7d"),
 
   // Client
-  CLIENT_URL: z.string().url().default("http://localhost:3000"),
+  CLIENT_URL: z.string().url().default("http://localhost:5173"),
 
   // Cloudinary
   CLOUDINARY_CLOUD_NAME: z.string().min(1, "CLOUDINARY_CLOUD_NAME is required"),
@@ -47,11 +45,11 @@ const envSchema = z.object({
   RATE_LIMIT_MAX: z.string().default("100").transform(Number),
 });
 
-// ─── Validate ──────────────────────────────────────────────────────────────────
+// Validate
 const _parsed = envSchema.safeParse(process.env);
 
 if (!_parsed.success) {
-  console.error("❌ Invalid environment variables:");
+  console.error("Invalid environment variables:");
   _parsed.error.issues.forEach((issue) => {
     console.error(`  • ${issue.path.join(".")}: ${issue.message}`);
   });

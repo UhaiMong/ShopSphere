@@ -1,6 +1,3 @@
-// ─────────────────────────────────────────────────────────────────────────────
-// PRODUCT VALIDATOR
-// ─────────────────────────────────────────────────────────────────────────────
 import { z } from "zod";
 
 export const createProductSchema = z.object({
@@ -33,7 +30,7 @@ export const productQuerySchema = z.object({
   sort: z
     .enum(["price_asc", "price_desc", "rating", "newest", "popular"])
     .default("newest"),
-  tags: z.string().optional(), // comma-separated
+  tags: z.string().optional(),
 });
 
 export type CreateProductInput = z.infer<typeof createProductSchema>;

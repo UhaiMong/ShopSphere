@@ -53,10 +53,13 @@ reviewSchema.post("save", async function () {
   await Product.recalculateRating(String(this.product));
 });
 
-// reviewSchema.post("deleteOne", { document: true }, async function () {
-//   const Product = mongoose.model("Product") as any;
-//   await Product.recalculateRating(String(this.product));
-// });
+reviewSchema.post("deleteOne", async function () {
+  const deletedDoc = await this.model.findOne(this.getFilter());
+  if (deletedDoc) {
+    const Product = mongoose.model("Product") as any;
+    await Product.recalculateRating(String(deletedDoc.product));
+  }
+});
 
 export const Review: Model<IReview> = mongoose.model<IReview>(
   "Review",

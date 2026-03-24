@@ -8,34 +8,30 @@ import rateLimit from "express-rate-limit";
 
 import { env } from "./config/env.config";
 import { errorHandler, notFoundHandler } from "./middleware/error.middleware";
-// import { requestId, httpLogger } from "./middleware/requestId.middleware";
+import { httpLogger, requestId } from "./middleware/requiestId.middleware";
 
-// ── Route imports ──────────────────────────────────────────────────────────────
+// Route imports
+
 import authRoutes from "./modules/auth/auth.routes";
-// import { productRouter } from "./modules/products/product.controller";
-// import { categoryRouter } from "./modules/categories/category.controller";
 import { cartRouter } from "./modules/cart/cart.controller";
 import {
   orderRouter,
   adminOrderRouter,
 } from "./modules/orders/order.controller";
-// import { reviewRouter } from "./modules/reviews/review.wishlist.controller";
-// import { wishlistRouter } from "./modules/reviews/review.wishlist.controller";
 import { userRouter, adminUserRouter } from "./modules/users/user.controller";
-import { httpLogger, requestId } from "./middleware/requiestId.middleware";
 import { categoryRouter } from "./modules/category/category.controller";
 import { reviewRouter } from "./modules/reviews/review.controller";
 import { wishlistRouter } from "./modules/wishlist/wishlist.controller";
 import { productRouter } from "./modules/products/product.routes";
 
-// ─── App Factory ──────────────────────────────────────────────────────────────
+// App Factory
 export const createApp = (): Application => {
   const app = express();
 
-  // ── Trust proxy (needed behind Nginx / load balancer for real IP) ──────────
+  // Trust proxy (needed behind Nginx / load balancer for real IP)
   app.set("trust proxy", 1);
 
-  // ── Security Headers ────────────────────────────────────────────────────────
+  // Security Headers
   app.use(
     helmet({
       crossOriginEmbedderPolicy: false,
@@ -43,7 +39,8 @@ export const createApp = (): Application => {
     }),
   );
 
-  // ── CORS ────────────────────────────────────────────────────────────────────
+  // CORS
+
   app.use(
     cors({
       origin: (origin, callback) => {
@@ -51,20 +48,20 @@ export const createApp = (): Application => {
           env.CLIENT_URL,
           env.CLIENT_URL.replace("3000", "3001"),
         ];
-        // Allow requests with no origin (mobile apps, Postman)
+
         if (!origin || allowed.includes(origin)) {
           callback(null, true);
         } else {
           callback(new Error(`CORS: Origin ${origin} not allowed`));
         }
       },
-      credentials: true, // Required for cookies (refresh token)
+      credentials: true,
       methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
       allowedHeaders: ["Content-Type", "Authorization", "X-Request-Id"],
     }),
   );
 
-  // ── Global Rate Limiter ─────────────────────────────────────────────────────
+  // Global Rate Limiter
   app.use(
     "/api",
     rateLimit({
@@ -79,23 +76,24 @@ export const createApp = (): Application => {
     }),
   );
 
-  // ── Body Parsers ────────────────────────────────────────────────────────────
+  // ── Body Parsers
+
   app.use(express.json({ limit: "10mb" }));
   app.use(express.urlencoded({ extended: true, limit: "10mb" }));
   app.use(cookieParser());
 
-  // ── NoSQL Injection Prevention ──────────────────────────────────────────────
+  // NoSQL Injection Prevention
   // Strips $ and . from user input to prevent MongoDB operator injection
   app.use(mongoSanitize());
 
-  // ── Compression ─────────────────────────────────────────────────────────────
+  // Compression
   app.use(compression());
 
-  // ── Request Logging ─────────────────────────────────────────────────────────
+  // Request Logging
   app.use(requestId);
   app.use(httpLogger);
 
-  // ── Health Check ────────────────────────────────────────────────────────────
+  //  Health Check
   // Used by Docker, Kubernetes liveness probes, and CI smoke tests
   app.get("/health", (_req: Request, res: Response) => {
     res.status(200).json({
@@ -106,7 +104,7 @@ export const createApp = (): Application => {
     });
   });
 
-  // ── API Routes ───────────────────────────────────────────────────────────────
+  // API Routes
   const API = "/api/v1";
 
   app.use(`${API}/auth`, authRoutes);
@@ -118,14 +116,14 @@ export const createApp = (): Application => {
   app.use(`${API}/wishlist`, wishlistRouter);
   app.use(`${API}/users`, userRouter);
 
-  // ── Admin Routes ──────────────────────────────────────────────────────────
+  //  Admin Routes
   app.use(`${API}/admin/orders`, adminOrderRouter);
   app.use(`${API}/admin/users`, adminUserRouter);
 
-  // ── 404 Handler ─────────────────────────────────────────────────────────────
+  // 404 Handler
   app.use(notFoundHandler);
 
-  // ── Global Error Handler ─────────────────────────────────────────────────────
+  // Global Error Handler
   // Must be last — Express identifies error middleware by 4 params (err, req, res, next)
   app.use(errorHandler);
 

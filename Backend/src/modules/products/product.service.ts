@@ -11,13 +11,13 @@ import {
 } from "./product.validator";
 
 // Sort Map
-// const SORT_MAP: Record<string, Record<string, 1 | -1>> = {
-//   price_asc: { price: 1 },
-//   price_desc: { price: -1 },
-//   rating: { avgRating: -1 },
-//   newest: { createdAt: -1 },
-//   popular: { soldCount: -1 },
-// };
+const SORT_MAP: Record<string, Record<string, 1 | -1>> = {
+  price_asc: { price: 1 },
+  price_desc: { price: -1 },
+  rating: { avgRating: -1 },
+  newest: { createdAt: -1 },
+  popular: { soldCount: -1 },
+};
 
 export const productService = {
   // getAll
@@ -35,7 +35,7 @@ export const productService = {
       inStock,
       isFeatured,
       search,
-      //   sort,
+      sort,
       tags,
     } = query;
 
@@ -73,16 +73,18 @@ export const productService = {
     }
 
     const skip = (page - 1) * limit;
-    // const sortObj = SORT_MAP[sort] ?? SORT_MAP.newest;
+
+    const sortObj = SORT_MAP[sort] ?? SORT_MAP.newest;
 
     // Add text score projection when searching
     const scoreProjection = search ? { score: { $meta: "textScore" } } : {};
-    // const scoreSortField = search ? { score: { $meta: "textScore" } } : {};
+    const scoreSortField: Record<string, 1 | -1 | { $meta: any }> | undefined =
+      search ? { score: { $meta: "textScore" } } : undefined;
 
     const [products, total] = await Promise.all([
       Product.find(filter, scoreProjection)
         .populate("category", "name slug")
-        // .sort({ ...scoreSortField, ...sortObj })
+        .sort({ ...(scoreSortField ?? {}), ...sortObj })
         .skip(skip)
         .limit(limit)
         .lean<IProduct[]>(),

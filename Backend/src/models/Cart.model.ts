@@ -1,23 +1,21 @@
 import mongoose, { Schema, Model, Document } from "mongoose";
 
-// ═══════════════════════════════════════════════════════════════════════════════
 // CART MODEL
-// ═══════════════════════════════════════════════════════════════════════════════
 
 export interface ICartItem {
   product: mongoose.Types.ObjectId;
   _id: string;
   quantity: number;
   variantId?: string;
-  variantLabel?: string; // e.g. "Red / XL"
-  priceSnapshot: number; // Price at time of adding (cents)
+  variantLabel?: string;
+  priceSnapshot: number;
 }
 
 export interface ICart extends Document {
   user: mongoose.Types.ObjectId;
   items: ICartItem[];
   couponCode?: string;
-  expiresAt?: Date; // TTL for guest carts
+  expiresAt?: Date;
   updatedAt: Date;
 }
 
@@ -43,7 +41,7 @@ const cartSchema = new Schema<ICart>(
     },
     items: { type: [cartItemSchema], default: [] },
     couponCode: String,
-    expiresAt: Date, // Set for guest carts; TTL index removes them automatically
+    expiresAt: Date,
   },
   { timestamps: true, versionKey: false },
 );

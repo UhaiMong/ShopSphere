@@ -13,19 +13,18 @@ import {
 
 const router = Router();
 
-// ─── Strict Rate Limiters ─────────────────────────────────────────────────────
-// Applied only to sensitive endpoints on top of the global limiter
+// Strict Rate Limiters
 
 const loginLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 5, // 5 attempts per window
+  windowMs: 15 * 60 * 1000,
+  max: 5,
   message: {
     success: false,
     message: "Too many login attempts. Please try again in 15 minutes.",
   },
   standardHeaders: true,
   legacyHeaders: false,
-  skipSuccessfulRequests: true, // Don't count successful logins
+  skipSuccessfulRequests: true,
 });
 
 const forgotPasswordLimiter = rateLimit({
@@ -39,7 +38,7 @@ const forgotPasswordLimiter = rateLimit({
   legacyHeaders: false,
 });
 
-// ─── Public Routes ────────────────────────────────────────────────────────────
+// Public Routes
 router.post("/register", validate(registerSchema), authController.register);
 router.post(
   "/login",
@@ -61,8 +60,8 @@ router.post(
   authController.resetPassword,
 );
 
-// ─── Protected Routes ─────────────────────────────────────────────────────────
-router.use(protect); // All routes below require authentication
+// Protected Routes
+router.use(protect);
 
 router.get("/me", authController.getMe);
 router.post("/logout", authController.logout);

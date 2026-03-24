@@ -1,7 +1,7 @@
 import mongoose, { Schema, Model, Document } from "mongoose";
 import slugify from "slugify";
 
-// ─── Interface ─────────────────────────────────────────────────────────────────
+// Interface
 export interface ICategory extends Document {
   name: string;
   slug: string;
@@ -9,14 +9,14 @@ export interface ICategory extends Document {
   image?: string;
   icon?: string;
   parent?: mongoose.Types.ObjectId | null;
-  ancestors: mongoose.Types.ObjectId[]; // Materialized path for fast tree queries
+  ancestors: mongoose.Types.ObjectId[];
   isActive: boolean;
   sortOrder: number;
   createdAt: Date;
   updatedAt: Date;
 }
 
-// ─── Schema ───────────────────────────────────────────────────────────────────
+// Schema
 const categorySchema = new Schema<ICategory>(
   {
     name: {
@@ -53,14 +53,14 @@ const categorySchema = new Schema<ICategory>(
   },
 );
 
-// ─── Virtual: children (populated on demand) ──────────────────────────────────
+// Virtual: children (populated on demand)
 categorySchema.virtual("children", {
   ref: "Category",
   localField: "_id",
   foreignField: "parent",
 });
 
-// ─── Pre-save: auto-generate slug ────────────────────────────────────────────
+// Pre-save: auto-generate slug
 categorySchema.pre("save", async function (next) {
   if (this.isModified("name") || this.isNew) {
     let baseSlug = slugify(this.name, { lower: true, strict: true });
@@ -76,12 +76,12 @@ categorySchema.pre("save", async function (next) {
   next();
 });
 
-// ─── Indexes ──────────────────────────────────────────────────────────────────
+// Indexes
 categorySchema.index({ slug: 1 });
 categorySchema.index({ parent: 1, isActive: 1 });
 categorySchema.index({ ancestors: 1 });
 
-// ─── Model ────────────────────────────────────────────────────────────────────
+// Model
 export const Category: Model<ICategory> = mongoose.model<ICategory>(
   "Category",
   categorySchema,

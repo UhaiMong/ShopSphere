@@ -3,9 +3,7 @@ import { v2 as cloudinary } from "cloudinary";
 import { Request, Response, NextFunction } from "express";
 import { ApiError } from "../utils/ApiError";
 
-// ─── Multer memory storage
-// Files are held in memory as Buffer, then streamed to Cloudinary.
-// Never written to disk → safe for serverless and containerized environments.
+// Multer memory storage
 
 const storage = multer.memoryStorage();
 
@@ -32,12 +30,12 @@ export const upload = multer({
   storage,
   fileFilter,
   limits: {
-    fileSize: 5 * 1024 * 1024, // 5MB per file
-    files: 10, // Max 10 images per product
+    fileSize: 5 * 1024 * 1024,
+    files: 10,
   },
 });
 
-// ─── Upload buffer to Cloudinary
+// Upload buffer to Cloudinary
 const uploadToCloudinary = (buffer: Buffer, folder: string): Promise<string> =>
   new Promise((resolve, reject) => {
     const stream = cloudinary.uploader.upload_stream(
@@ -57,8 +55,7 @@ const uploadToCloudinary = (buffer: Buffer, folder: string): Promise<string> =>
     stream.end(buffer);
   });
 
-// ─── Middleware: process uploaded files → Cloudinary URLs
-// Attaches `req.uploadedUrls` (string[]) for downstream controllers.
+// Middleware: process uploaded files
 
 export const processImages =
   (folder = "products") =>

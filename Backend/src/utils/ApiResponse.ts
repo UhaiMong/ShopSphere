@@ -1,6 +1,6 @@
 import { Response } from "express";
 
-// ─── Pagination Meta ──────────────────────────────────────────────────────────
+// Pagination Meta
 export interface PaginationMeta {
   total: number;
   page: number;
@@ -10,8 +10,8 @@ export interface PaginationMeta {
   hasPrevPage: boolean;
 }
 
-// ─── Standard Response Shape ──────────────────────────────────────────────────
-// Every endpoint returns this exact shape — makes frontend handling predictable.
+// Standard Response Shape
+// response:
 // { success, message, data, pagination? }
 
 export class ApiResponse {
@@ -55,7 +55,7 @@ export class ApiResponse {
   }
 }
 
-// ─── Pagination Helper ────────────────────────────────────────────────────────
+// Pagination Helper
 export const getPaginationMeta = (
   total: number,
   page: number,
@@ -69,7 +69,7 @@ export const getPaginationMeta = (
   hasPrevPage: page > 1,
 });
 
-// ─── Parse pagination query params ───────────────────────────────────────────
+// Parse pagination query params
 export const parsePagination = (
   query: Record<string, unknown>,
   maxLimit = 50,

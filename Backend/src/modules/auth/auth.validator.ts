@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-// ─── Reusable field definitions ───────────────────────────────────────────────
+// Reusable field definitions
 const emailField = z
   .string({ required_error: "Email is required" })
   .email("Please provide a valid email")
@@ -10,7 +10,7 @@ const emailField = z
 const passwordField = z
   .string({ required_error: "Password is required" })
   .min(8, "Password must be at least 8 characters")
-  .max(72, "Password is too long") // bcrypt limit
+  .max(72, "Password is too long")
   .regex(
     /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/,
     "Password must contain at least one uppercase letter, one lowercase letter, and one number",
@@ -22,7 +22,7 @@ const nameField = z
   .max(60, "Name must not exceed 60 characters")
   .trim();
 
-// ─── Schemas ──────────────────────────────────────────────────────────────────
+// Schemas
 export const registerSchema = z.object({
   name: nameField,
   email: emailField,
@@ -64,7 +64,7 @@ export const updateProfileSchema = z.object({
     .optional(),
 });
 
-// ─── Inferred types ───────────────────────────────────────────────────────────
+//  Inferred types
 export type RegisterInput = z.infer<typeof registerSchema>;
 export type LoginInput = z.infer<typeof loginSchema>;
 export type ForgotPasswordInput = z.infer<typeof forgotPasswordSchema>;

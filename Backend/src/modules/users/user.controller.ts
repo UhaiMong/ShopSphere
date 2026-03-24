@@ -9,7 +9,7 @@ import { upload, processImages } from "../../middleware/upload.middleware";
 import { parsePagination, getPaginationMeta } from "../../utils/ApiResponse";
 import { z } from "zod";
 
-// ─── Validators ───────────────────────────────────────────────────────────────
+// Validators
 const updateProfileSchema = z.object({
   name: z.string().min(2).max(60).trim().optional(),
   phone: z
@@ -31,7 +31,7 @@ const addressSchema = z.object({
   isDefault: z.boolean().default(false),
 });
 
-// ─── Controller
+//  Controller
 const userController = {
   // GET /users/me
   getProfile: catchAsync(async (req: Request, res: Response) => {

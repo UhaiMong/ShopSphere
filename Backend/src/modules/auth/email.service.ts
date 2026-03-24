@@ -1,10 +1,8 @@
 import { env } from "@/config/env.config";
 import { logger } from "@/utils/logger";
 import nodemailer, { Transporter } from "nodemailer";
-// import { env } from "../../config/env.config";
-// import { logger } from "../../utils/logger";
 
-// ─── Transporter ──────────────────────────────────────────────────────────────
+// Transporter
 let transporter: Transporter;
 
 const getTransporter = (): Transporter => {
@@ -22,7 +20,7 @@ const getTransporter = (): Transporter => {
   return transporter;
 };
 
-// ─── Base Email Template ──────────────────────────────────────────────────────
+// Base Email Template
 const baseTemplate = (content: string): string => `
 <!DOCTYPE html>
 <html>
@@ -57,7 +55,8 @@ const baseTemplate = (content: string): string => `
 </html>
 `;
 
-// ─── Send Mail Helper ─────────────────────────────────────────────────────────
+//  Send Mail Helper
+
 interface MailOptions {
   to: string;
   subject: string;
@@ -79,7 +78,7 @@ const sendMail = async (options: MailOptions): Promise<void> => {
   }
 };
 
-// ─── Email Templates ──────────────────────────────────────────────────────────
+// Email Templates
 
 export const sendVerificationEmail = async (
   to: string,

@@ -2,9 +2,8 @@ import { Request, Response, NextFunction } from "express";
 import { v4 as uuidv4 } from "uuid";
 import { logger } from "../utils/logger";
 
-// ─── requestId ────────────────────────────────────────────────────────────────
+// requestId
 // Attaches a unique ID to every request for distributed tracing.
-// Passed in response header so frontend can log it for support tickets.
 
 export const requestId = (
   req: Request,
@@ -17,8 +16,7 @@ export const requestId = (
   next();
 };
 
-// ─── httpLogger ───────────────────────────────────────────────────────────────
-// Logs every request + response with timing.
+// httpLogger
 
 export const httpLogger = (
   req: Request,

@@ -1,6 +1,3 @@
-// ─────────────────────────────────────────────────────────────────────────────
-// PRODUCT CONTROLLER
-// ─────────────────────────────────────────────────────────────────────────────
 import { Request, Response } from "express";
 import { productService } from "./product.service";
 import { ApiResponse } from "../../utils/ApiResponse";

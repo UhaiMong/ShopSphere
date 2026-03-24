@@ -7,7 +7,7 @@ import { protect, requireRole } from "../../middleware/auth.middleware";
 import { z } from "zod";
 import { validate } from "../../middleware/validate.middleware";
 
-// ─── Validators
+// Validators
 const createCategorySchema = z.object({
   name: z.string().min(2).max(80).trim(),
   description: z.string().max(500).optional(),
@@ -22,7 +22,7 @@ const createCategorySchema = z.object({
 
 const updateCategorySchema = createCategorySchema.partial();
 
-// ─── Service helpers
+// Service helpers
 const buildAncestors = async (parentId?: string): Promise<string[]> => {
   if (!parentId) return [];
   const parent = await Category.findById(parentId);
@@ -30,7 +30,7 @@ const buildAncestors = async (parentId?: string): Promise<string[]> => {
   return [...parent.ancestors.map(String), parentId];
 };
 
-// ─── Controller
+//  Controller
 const categoryController = {
   // GET /categories  — full tree (flat list, frontend builds tree)
   getAll: catchAsync(async (_req: Request, res: Response) => {
@@ -105,7 +105,7 @@ const categoryController = {
   }),
 };
 
-// ─── Router
+// Router
 export const categoryRouter = Router();
 
 categoryRouter.get("/", categoryController.getAll);

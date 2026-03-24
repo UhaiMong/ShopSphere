@@ -21,16 +21,15 @@ import {
   ChangePasswordInput,
 } from "./auth.validator";
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
-/** Generates a cryptographically random hex token */
+// Helpers: generate random crypto token
 const generateToken = (bytes = 32): string =>
   crypto.randomBytes(bytes).toString("hex");
 
-/** Generates a 6-digit numeric OTP */
+// Generates a 6-digit numeric OTP
 const generateOTP = (): string =>
   Math.floor(100000 + Math.random() * 900000).toString();
 
-/** Builds the JWT payload from a user document */
+// Builds the JWT payload from a user document
 const buildPayload = (user: {
   _id: unknown;
   email: string;
@@ -43,9 +42,9 @@ const buildPayload = (user: {
   isVerified: user.isVerified,
 });
 
-// ─── Auth Service ─────────────────────────────────────────────────────────────
+// Auth Service
 export const authService = {
-  // ── register ────────────────────────────────────────────────────────────────
+  // register
   async register(input: RegisterInput): Promise<{ message: string }> {
     const { name, email, password } = input;
 
@@ -66,7 +65,7 @@ export const authService = {
       emailVerificationToken,
     });
 
-    // Send verification email (non-blocking — failure won't break registration)
+    // Send verification email: non-blocking
     await sendVerificationEmail(email, name, emailVerificationToken);
 
     return {
@@ -75,7 +74,7 @@ export const authService = {
     };
   },
 
-  // ── login ───────────────────────────────────────────────────────────────────
+  // login
   async login(input: LoginInput): Promise<{
     user: Partial<IUserPayload>;
     tokens: TokenPair;
@@ -114,7 +113,7 @@ export const authService = {
     return { user: payload, tokens };
   },
 
-  // ── refreshTokens ───────────────────────────────────────────────────────────
+  // refreshTokens
   async refreshTokens(incomingRefreshToken: string): Promise<TokenPair> {
     // Verify refresh token signature first
     let decoded: { _id: string };
@@ -150,20 +149,20 @@ export const authService = {
     return newTokens;
   },
 
-  // ── logout ──────────────────────────────────────────────────────────────────
+  // logout
   async logout(userId: string, refreshToken: string): Promise<void> {
     await User.findByIdAndUpdate(userId, {
       $pull: { refreshTokens: refreshToken },
     });
   },
 
-  // ── logoutAll ───────────────────────────────────────────────────────────────
+  // logoutAll
   // Invalidates all sessions (all devices)
   async logoutAll(userId: string): Promise<void> {
     await User.findByIdAndUpdate(userId, { $set: { refreshTokens: [] } });
   },
 
-  // ── verifyEmail ─────────────────────────────────────────────────────────────
+  // verifyEmail
   async verifyEmail(token: string): Promise<{ message: string }> {
     const user = await User.findOne({
       emailVerificationToken: token,
@@ -183,7 +182,7 @@ export const authService = {
     return { message: "Email verified successfully. You can now log in." };
   },
 
-  // ── forgotPassword ──────────────────────────────────────────────────────────
+  //  forgotPassword
   async forgotPassword(
     input: ForgotPasswordInput,
   ): Promise<{ message: string }> {
@@ -208,7 +207,7 @@ export const authService = {
     return { message: genericMessage };
   },
 
-  // ── resetPassword ───────────────────────────────────────────────────────────
+  // resetPassword
   async resetPassword(input: ResetPasswordInput): Promise<{ message: string }> {
     const { email, otp, newPassword } = input;
 
@@ -240,7 +239,8 @@ export const authService = {
     };
   },
 
-  // ── changePassword ──────────────────────────────────────────────────────────
+  // changePassword
+
   async changePassword(
     userId: string,
     input: ChangePasswordInput,
@@ -267,14 +267,14 @@ export const authService = {
     return { message: "Password changed successfully. Please log in again." };
   },
 
-  // ── getMe ───────────────────────────────────────────────────────────────────
+  // getMe
   async getMe(userId: string) {
     const user = await User.findById(userId).select("-__v");
     if (!user) throw ApiError.notFound("User");
     return user.toPublicJSON();
   },
 
-  // ── resendVerification ──────────────────────────────────────────────────────
+  //  resendVerification
   async resendVerificationEmail(userId: string): Promise<{ message: string }> {
     const user = await User.findById(userId).select("+emailVerificationToken");
     if (!user) throw ApiError.notFound("User");

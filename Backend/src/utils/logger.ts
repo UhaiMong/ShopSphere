@@ -1,8 +1,9 @@
 import pino from "pino";
 
-// ─── Logger ────────────────────────────────────────────────────────────────────
-// In production: JSON format for log aggregators (Datadog, CloudWatch)
-// In development: pretty-printed with colors
+// Logger
+// production: JSON format for log aggregators (Datadog, CloudWatch)
+
+// development: pretty-printed with colors
 export const logger = pino({
   level: process.env.NODE_ENV === "production" ? "info" : "debug",
   ...(process.env.NODE_ENV !== "production" && {

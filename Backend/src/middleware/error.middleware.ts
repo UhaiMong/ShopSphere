@@ -6,11 +6,8 @@ import { ZodError } from "zod";
 import { ApiError } from "../utils/ApiError";
 import { logger } from "../utils/logger";
 import { env } from "@/config/env.config";
-// import { env } from "@config/env.config.js";
 
-// ─── Error Handler Middleware ──────────────────────────────────────────────────
-// Single source of truth for all error responses.
-// Maps known error types to consistent ApiError format.
+//  Error Handler Middleware
 
 export const errorHandler: ErrorRequestHandler = (
   err: unknown,
@@ -20,12 +17,12 @@ export const errorHandler: ErrorRequestHandler = (
 ): void => {
   let error: ApiError;
 
-  // ── 1. Already an ApiError ─────────────────────────────────────────────────
+  // Already an ApiError
   if (err instanceof ApiError) {
     error = err;
   }
 
-  // ── 2. Mongoose Validation Error ───────────────────────────────────────────
+  // Mongoose Validation Error
   else if (err instanceof MongooseError.ValidationError) {
     const errors = Object.values(err.errors).map((e) => ({
       field: e.path,
@@ -34,25 +31,25 @@ export const errorHandler: ErrorRequestHandler = (
     error = ApiError.badRequest("Validation failed", errors);
   }
 
-  // ── 3. Mongoose Cast Error (invalid ObjectId) ──────────────────────────────
+  // Mongoose Cast Error (invalid ObjectId)
   else if (err instanceof MongooseError.CastError) {
     error = ApiError.badRequest(`Invalid ${err.path}: ${err.value}`);
   }
 
-  // ── 4. MongoDB Duplicate Key ───────────────────────────────────────────────
+  // MongoDB Duplicate Key
   else if (err instanceof MongoServerError && err.code === 11000) {
     const field = Object.keys(err.keyValue ?? {})[0] ?? "field";
     error = ApiError.conflict(`${field} already exists`);
   }
 
-  // ── 5. JWT Errors ──────────────────────────────────────────────────────────
+  // JWT Errors
   else if (err instanceof TokenExpiredError) {
     error = ApiError.unauthorized("Token expired. Please log in again.");
   } else if (err instanceof JsonWebTokenError) {
     error = ApiError.unauthorized("Invalid token. Please log in again.");
   }
 
-  // ── 6. Zod Validation Error ────────────────────────────────────────────────
+  // Zod Validation Error
   else if (err instanceof ZodError) {
     const errors = err.issues.map((issue) => ({
       field: issue.path.join("."),
@@ -61,7 +58,7 @@ export const errorHandler: ErrorRequestHandler = (
     error = ApiError.badRequest("Validation failed", errors);
   }
 
-  // ── 7. Unknown Errors ──────────────────────────────────────────────────────
+  // Unknown Errors
   else {
     const message =
       env.NODE_ENV === "production"
@@ -70,7 +67,7 @@ export const errorHandler: ErrorRequestHandler = (
     error = ApiError.internal(message);
   }
 
-  // ── Log non-operational errors ─────────────────────────────────────────────
+  // Log non-operational errors
   if (!error.isOperational) {
     logger.error(
       { err, requestId: req.requestId, path: req.path, method: req.method },
@@ -78,7 +75,7 @@ export const errorHandler: ErrorRequestHandler = (
     );
   }
 
-  // ── Send response ──────────────────────────────────────────────────────────
+  // Send response
   res.status(error.statusCode).json({
     success: false,
     message: error.message,
@@ -88,7 +85,7 @@ export const errorHandler: ErrorRequestHandler = (
   });
 };
 
-// ─── 404 Handler ──────────────────────────────────────────────────────────────
+// 404 Handler
 export const notFoundHandler = (
   req: Request,
   _res: Response,

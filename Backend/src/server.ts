@@ -3,7 +3,7 @@ import { connectDB, disconnectDB } from "./config/database";
 import { env } from "./config/env.config";
 import { logger } from "./utils/logger";
 
-// ─── Boot
+//  Boot
 const bootstrap = async (): Promise<void> => {
   // 1. Connect to MongoDB (exits process on failure)
   await connectDB();
@@ -49,7 +49,7 @@ const bootstrap = async (): Promise<void> => {
   process.on("SIGINT", () => shutdown("SIGINT"));
 };
 
-// ─── Unhandled Rejections & Exceptions
+// Unhandled Rejections & Exceptions
 // Catch-all safety net — these indicate programming bugs, not operational errors.
 
 process.on("unhandledRejection", (reason: unknown) => {
@@ -62,5 +62,5 @@ process.on("uncaughtException", (error: Error) => {
   process.exit(1);
 });
 
-// Go!
+// Go
 bootstrap();
