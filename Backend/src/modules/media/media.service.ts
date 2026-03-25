@@ -108,6 +108,12 @@ export const mediaService = {
     if (!media) throw ApiError.notFound('Media');
   },
 
+  // Restore
+  async reStore(id: string): Promise<void> {
+    const meda = await Media.findByIdAndUpdate(id, { isActive: true });
+    if (!meda) throw ApiError.notFound('Media');
+  },
+
   // Delete media
   async deleteMedia(mediaId: string): Promise<void> {
     const media = await Media.findById(mediaId);

@@ -9,7 +9,14 @@ import {
   CheckCircle2,
   ImageIcon,
 } from "lucide-react";
-import { apiGet, apiPost, apiPut, apiPatch, api } from "@/services/api";
+import {
+  apiGet,
+  apiPost,
+  apiPut,
+  apiPatch,
+  api,
+  apiDelete,
+} from "@/services/api";
 import {
   Button,
   Badge,
@@ -25,7 +32,7 @@ import {
   Toggle,
 } from "../../components/ui";
 import toast from "react-hot-toast";
-import { formatPrice, formatDate, truncate, cn } from "@/utils";
+import { formatPrice, formatDate, truncate, cn, fSizeExtension } from "@/utils";
 import type { Product, Category, PaginatedResponse, Media } from "@/types";
 
 interface MediaForm {
@@ -363,9 +370,8 @@ export const MediaPage = () => {
     if (!deleteId) return;
     setIsDeleting(true);
     try {
-      await apiPatch(`/media/${deleteId}`, {});
-      await api.delete(`/media/${deleteId}`);
-      toast.success("Product deleted");
+      await apiDelete(`/media/${deleteId}`);
+      toast.success("Media product image deleted!");
       void load(pagination.page);
     } catch {
       toast.error("Delete failed");
@@ -373,6 +379,17 @@ export const MediaPage = () => {
       setIsDeleting(false);
       setDeleteId(null);
     }
+  };
+  const toggleActiveStatus = async (id: string, val: boolean) => {
+    if (val) {
+      await apiPut(`/media/${id}/restore`, { isActive: val });
+    } else {
+      await apiPut(`/media/${id}/trash`, { isAtive: val });
+    }
+
+    setMedia((p) =>
+      p.map((prod) => (prod._id === id ? { ...prod, isActive: val } : prod)),
+    );
   };
 
   return (
@@ -458,26 +475,27 @@ export const MediaPage = () => {
                             )}
                           </div>
                           <div>
-                            <p className="text-xs font-medium text-zinc-200">
-                              {truncate(p.title, 40)}
+                            <p className="text-xs font-medium text-text-muted">
+                              {truncate(p.alt, 40)}
                             </p>
                           </div>
                         </div>
-                      </td>
-                      <td>
-                        <Badge color="zinc">{catName || "—"}</Badge>
                       </td>
                       <td>
                         <p className="text-xs font-medium text-zinc-200">
                           {p.title}
                         </p>
                       </td>
-                      <td>{p.fileSize}</td>
+                      <td>{fSizeExtension(p.fileSize)}</td>
+                      <td>{truncate(p.imgURL, 40)}</td>
+
                       <td>
-                        <Badge color={p.isActive ? "green" : "red"}>
-                          {p.isActive ? "Active" : "Hidden"}
-                        </Badge>
+                        <Toggle
+                          checked={p.isActive}
+                          onChange={(v) => void toggleActiveStatus(p._id, v)}
+                        />
                       </td>
+
                       <td>
                         <div className="flex items-center gap-1">
                           <Button

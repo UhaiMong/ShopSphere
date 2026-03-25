@@ -51,4 +51,15 @@ export const mediaController = {
     await mediaService.softDelete(req.params.id);
     ApiResponse.success(res, null, 'A media image kept trash!');
   }),
+  // DELETE /media/:id  (admin)
+  restore: catchAsync(async (req: Request, res: Response) => {
+    await mediaService.reStore(req.params.id);
+    ApiResponse.success(res, null, 'A media image restored!');
+  }),
+  // Hard delete media
+
+  delete: catchAsync(async (req: Request, res: Response) => {
+    await mediaService.deleteMedia(req.params.id);
+    ApiResponse.success(res, null, 'Media deleted');
+  }),
 };

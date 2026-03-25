@@ -5,12 +5,8 @@ import { upload, processImages } from '../../middleware/upload.middleware';
 
 import { mediaController } from './media.controller';
 import { createMediaSchema, mediaQuerySchema, updatMediaSchema } from './media.validator';
-import { mediaService } from './media.service';
-// import { createMediaSchema } from "./media.validator";
 
 export const mediaRouter = Router();
-
-// ── Public
 
 // ── Admin
 mediaRouter.get(
@@ -41,12 +37,14 @@ mediaRouter.patch(
 );
 
 // Soft delete
-mediaRouter.delete('/:id', protect, requireRole('admin', 'superadmin'), mediaController.remove);
-
-// Hard delete
-mediaRouter.delete(
-  '/:id/media',
+mediaRouter.put('/:id/trash', protect, requireRole('admin', 'superadmin'), mediaController.remove);
+// Restore
+mediaRouter.put(
+  '/:id/restore',
   protect,
   requireRole('admin', 'superadmin'),
-  mediaService.deleteMedia,
+  mediaController.restore,
 );
+
+// Hard delete
+mediaRouter.delete('/:id', protect, requireRole('admin', 'superadmin'), mediaController.delete);

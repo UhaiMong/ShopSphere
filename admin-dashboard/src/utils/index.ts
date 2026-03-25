@@ -61,3 +61,14 @@ export const downloadCSV = (
   a.download = filename;
   a.click();
 };
+
+export const fSizeExtension = (s: any): string => {
+  const size = Number(s);
+  if (size < 1024) {
+    return `${size} KB`;
+  } else if (size < 1024 * 1024) {
+    return `${(size / 1024).toFixed(2)} MB`;
+  } else {
+    return `${(size / (1024 * 1024)).toFixed(2)} GB`;
+  }
+};
