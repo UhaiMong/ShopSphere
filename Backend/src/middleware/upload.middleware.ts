@@ -1,28 +1,18 @@
-import multer from "multer";
-import { v2 as cloudinary } from "cloudinary";
-import { Request, Response, NextFunction } from "express";
-import { ApiError } from "../utils/ApiError";
+import multer from 'multer';
+import { v2 as cloudinary } from 'cloudinary';
+import { Request, Response, NextFunction } from 'express';
+import { ApiError } from '../utils/ApiError';
 
 // Multer memory storage
 
 const storage = multer.memoryStorage();
 
-const fileFilter = (
-  _req: Request,
-  file: Express.Multer.File,
-  cb: multer.FileFilterCallback,
-) => {
-  const allowed = ["image/jpeg", "image/png", "image/webp", "image/avif"];
+const fileFilter = (_req: Request, file: Express.Multer.File, cb: multer.FileFilterCallback) => {
+  const allowed = ['image/jpeg', 'image/png', 'image/webp', 'image/avif'];
   if (allowed.includes(file.mimetype)) {
     cb(null, true);
   } else {
-    cb(
-      new ApiError(
-        400,
-        "Only JPEG, PNG, WebP, and AVIF images are allowed",
-        "INVALID_FILE_TYPE",
-      ),
-    );
+    cb(new ApiError(400, 'Only JPEG, PNG, WebP, and AVIF images are allowed', 'INVALID_FILE_TYPE'));
   }
 };
 
@@ -36,42 +26,43 @@ export const upload = multer({
 });
 
 // Upload buffer to Cloudinary
-const uploadToCloudinary = (buffer: Buffer, folder: string): Promise<string> =>
+const uploadToCloudinary = (
+  buffer: Buffer,
+  folder: string,
+): Promise<{ url: string; publicId: string }> =>
   new Promise((resolve, reject) => {
     const stream = cloudinary.uploader.upload_stream(
       {
         folder: `shopsphere/${folder}`,
         transformation: [
-          { width: 1200, height: 1200, crop: "limit" },
-          { quality: "auto", fetch_format: "auto" },
+          { width: 1200, height: 1200, crop: 'limit' },
+          { quality: 'auto', fetch_format: 'auto' },
         ],
       },
       (error, result) => {
-        if (error || !result)
-          return reject(error ?? new Error("Cloudinary upload failed"));
-        resolve(result.secure_url);
+        if (error || !result) return reject(error ?? new Error('Cloudinary upload failed'));
+        resolve({ url: result.secure_url, publicId: result.public_id });
       },
     );
     stream.end(buffer);
   });
 
-// Middleware: process uploaded files
-
 export const processImages =
-  (folder = "products") =>
+  (folder = 'media') =>
   async (req: Request, _res: Response, next: NextFunction): Promise<void> => {
     try {
-      const files = req.files as Express.Multer.File[] | undefined;
-      if (!files || files.length === 0) {
-        (req as Request & { uploadedUrls: string[] }).uploadedUrls = [];
+      // Handle both single and array uploads
+      const files = req.files ? (req.files as Express.Multer.File[]) : req.file ? [req.file] : [];
+
+      if (!files.length) {
+        (req as any).uploadedFiles = [];
         return next();
       }
 
-      const urls = await Promise.all(
+      const results = await Promise.all(
         files.map((file) => uploadToCloudinary(file.buffer, folder)),
       );
-
-      (req as Request & { uploadedUrls: string[] }).uploadedUrls = urls;
+      (req as any).uploadedFiles = results;
       next();
     } catch (err) {
       next(err);

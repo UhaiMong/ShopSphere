@@ -1,7 +1,7 @@
-import { createApp } from "./app";
-import { connectDB, disconnectDB } from "./config/database";
-import { env } from "./config/env.config";
-import { logger } from "./utils/logger";
+import { createApp } from './app';
+import { connectDB, disconnectDB } from './config/database';
+import { env } from './config/env.config';
+import { logger } from './utils/logger';
 
 //  Boot
 const bootstrap = async (): Promise<void> => {
@@ -32,33 +32,33 @@ const bootstrap = async (): Promise<void> => {
     logger.info(`${signal} received — shutting down gracefully`);
 
     server.close(async () => {
-      logger.info("HTTP server closed");
+      logger.info('HTTP server closed');
       await disconnectDB();
-      logger.info("Shutdown complete");
+      logger.info('Shutdown complete');
       process.exit(0);
     });
 
     // Force shutdown after 10s if requests don't finish
     setTimeout(() => {
-      logger.error("Forced shutdown after timeout");
+      logger.error('Forced shutdown after timeout');
       process.exit(1);
     }, 10_000);
   };
 
-  process.on("SIGTERM", () => shutdown("SIGTERM"));
-  process.on("SIGINT", () => shutdown("SIGINT"));
+  process.on('SIGTERM', () => shutdown('SIGTERM'));
+  process.on('SIGINT', () => shutdown('SIGINT'));
 };
 
 // Unhandled Rejections & Exceptions
 // Catch-all safety net — these indicate programming bugs, not operational errors.
 
-process.on("unhandledRejection", (reason: unknown) => {
-  logger.error({ reason }, "Unhandled Promise Rejection — shutting down");
+process.on('unhandledRejection', (reason: unknown) => {
+  logger.error({ reason }, 'Unhandled Promise Rejection — shutting down');
   process.exit(1);
 });
 
-process.on("uncaughtException", (error: Error) => {
-  logger.error({ error }, "Uncaught Exception — shutting down");
+process.on('uncaughtException', (error: Error) => {
+  logger.error({ error }, 'Uncaught Exception — shutting down');
   process.exit(1);
 });
 
