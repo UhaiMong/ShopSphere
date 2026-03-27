@@ -1,11 +1,18 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { ShoppingCart, Heart } from "lucide-react";
-import type { Product } from "../../types";
-// import { formatPrice, getDiscountPercent, cn } from "../../utils";
-import { Badge, StarRating, Spinner } from "../ui";
-// import { useCart, useWishlist, useAuth } from "../../hooks";
 import toast from "react-hot-toast";
+import { formatPrice } from "@/utils/currency";
+import { StarRating } from "../ui/StarRating";
+import { PageLoader } from "../ui/PageLoader";
+import { cn } from "@/utils/cn";
+import { Badge } from "../ui/Badge";
+import { Product } from "@/types/typeProduct";
+import { useCart } from "@/hooks/useCart";
+import { useWishlist } from "@/hooks/useWishlist";
+import { useAuth } from "@/hooks/useAuth";
+import { getDiscountPercent } from "@/utils/product";
+import { addToCart } from "@/features/cart/cartSlice";
 
 interface ProductCardProps {
   product: Product;
@@ -128,7 +135,7 @@ export const ProductCard = ({ product, className }: ProductCardProps) => {
             )}
           >
             {isAddingToCart ? (
-              <Spinner size="xs" className="text-white" />
+              <PageLoader />
             ) : (
               <ShoppingCart className="w-3.5 h-3.5" />
             )}
@@ -170,8 +177,3 @@ export const ProductCard = ({ product, className }: ProductCardProps) => {
     </Link>
   );
 };
-
-// Needed for the toast inside ProductCard
-import { addToCart } from "../../features/cart/cartSlice";
-import { cn, formatPrice, getDiscountPercent } from "@/uitls";
-import { useAuth, useCart, useWishlist } from "@/hooks";

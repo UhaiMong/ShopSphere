@@ -1,6 +1,4 @@
-// ─────────────────────────────────────────────────────────────────────────────
 // PROFILE PAGE
-// ─────────────────────────────────────────────────────────────────────────────
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { User, Package, LogOut, Shield, HeartIcon } from "lucide-react";
@@ -10,11 +8,12 @@ import {
   logout,
   setCredentials,
 } from "../../features/auth/authSlice";
-import { Button, Input } from "../../components/ui";
-// import { cn } from '../../utils';
-// import api from '../../services/api';
 import toast from "react-hot-toast";
 import { Link, useNavigate } from "react-router-dom";
+import api from "@/services/app";
+import { cn } from "@/utils/cn";
+import { Input } from "@/components/ui/Input";
+import { Button } from "@/components/ui/Button";
 
 type ProfileTab = "account" | "security";
 
@@ -256,102 +255,3 @@ export const ProfilePage = () => {
     </div>
   );
 };
-
-// ─────────────────────────────────────────────────────────────────────────────
-// WISHLIST PAGE
-// ─────────────────────────────────────────────────────────────────────────────
-import { useEffect } from "react";
-import type { Product } from "../../types";
-import { ProductCard } from "../../components/shared/ProductCard";
-import { SkeletonProductCard, EmptyState } from "../../components/ui";
-import { Heart, ArrowRight } from "lucide-react";
-import { useWishlist } from "../../hooks";
-import { cn } from "@/uitls";
-import api from "@/services/app";
-
-export const WishlistPage = () => {
-  const { wishlistIds, reload } = useWishlist();
-  const [products, setProducts] = useState<Product[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    void api
-      .get<{ data: { products: Product[] } }>("/wishlist")
-      .then(({ data }) => {
-        setProducts(data.data.products);
-        setIsLoading(false);
-      });
-  }, [wishlistIds]);
-
-  return (
-    <div className="container-app py-10">
-      <h1
-        style={{ fontFamily: "Syne, sans-serif" }}
-        className="text-3xl font-bold text-stone-900 mb-8"
-      >
-        My Wishlist
-      </h1>
-
-      {isLoading ? (
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-          {Array.from({ length: 8 }).map((_, i) => (
-            <SkeletonProductCard key={i} />
-          ))}
-        </div>
-      ) : products.length === 0 ? (
-        <EmptyState
-          icon={<Heart className="w-14 h-14" />}
-          title="Your wishlist is empty"
-          description="Save products you love and come back to them anytime."
-          action={
-            <Link to="/products">
-              <Button rightIcon={<ArrowRight className="w-4 h-4" />}>
-                Browse Products
-              </Button>
-            </Link>
-          }
-        />
-      ) : (
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 stagger">
-          {products.map((p, i) => (
-            <div
-              key={p._id}
-              className="animate-fade-up"
-              style={{ animationDelay: `${i * 40}ms` }}
-            >
-              <ProductCard product={p} />
-            </div>
-          ))}
-        </div>
-      )}
-    </div>
-  );
-};
-
-// ─────────────────────────────────────────────────────────────────────────────
-// NOT FOUND PAGE
-// ─────────────────────────────────────────────────────────────────────────────
-export const NotFoundPage = () => (
-  <div className="container-app flex flex-col items-center justify-center min-h-[70vh] text-center py-16">
-    <p
-      style={{ fontFamily: "Syne, sans-serif" }}
-      className="text-[9rem] font-extrabold text-stone-100 leading-none select-none"
-    >
-      404
-    </p>
-    <h1
-      style={{ fontFamily: "Syne, sans-serif" }}
-      className="text-3xl font-bold text-stone-900 -mt-6 mb-3"
-    >
-      Page not found
-    </h1>
-    <p className="text-stone-500 mb-8 max-w-sm">
-      The page you're looking for doesn't exist or has been moved.
-    </p>
-    <Link to="/">
-      <Button size="lg" rightIcon={<ArrowRight className="w-4 h-4" />}>
-        Back to Home
-      </Button>
-    </Link>
-  </div>
-);

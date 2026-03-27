@@ -1,13 +1,13 @@
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
-import type {
+import api from "@/services/app";
+import {
   AuthState,
-  User,
   LoginCredentials,
   RegisterCredentials,
-} from "../../types";
-import api from "@/services/app";
+  User,
+} from "@/types/typeAuth";
 
-// ─── Initial State ────────────────────────────────────────────────────────────
+// Initial State
 const initialState: AuthState = {
   user: null,
   accessToken: localStorage.getItem("accessToken"),
@@ -15,7 +15,7 @@ const initialState: AuthState = {
   isLoading: true, // true on mount while we verify token
 };
 
-// ─── Async Thunks ─────────────────────────────────────────────────────────────
+// Async Thunks
 export const login = createAsyncThunk(
   "auth/login",
   async (credentials: LoginCredentials, { rejectWithValue }) => {
@@ -67,7 +67,7 @@ export const getMe = createAsyncThunk(
   },
 );
 
-// ─── Slice ────────────────────────────────────────────────────────────────────
+// Slice
 const authSlice = createSlice({
   name: "auth",
   initialState,
@@ -89,7 +89,7 @@ const authSlice = createSlice({
     },
   },
   extraReducers: (builder) => {
-    // ── login ──────────────────────────────────────────────────────────────
+    // login
     builder
       .addCase(login.fulfilled, (state, action) => {
         state.user = action.payload.user;
@@ -102,7 +102,7 @@ const authSlice = createSlice({
         state.isLoading = false;
       });
 
-    // ── logout ─────────────────────────────────────────────────────────────
+    // logout
     builder.addCase(logout.fulfilled, (state) => {
       state.user = null;
       state.accessToken = null;
@@ -110,7 +110,7 @@ const authSlice = createSlice({
       state.isLoading = false;
     });
 
-    // ── getMe ──────────────────────────────────────────────────────────────
+    // getMe
     builder
       .addCase(getMe.pending, (state) => {
         state.isLoading = true;
@@ -132,7 +132,7 @@ const authSlice = createSlice({
 export const { setCredentials, clearCredentials } = authSlice.actions;
 export default authSlice.reducer;
 
-// ─── Selectors ────────────────────────────────────────────────────────────────
+//  Selectors
 export const selectCurrentUser = (state: { auth: AuthState }) =>
   state.auth.user;
 export const selectIsAuthenticated = (state: { auth: AuthState }) =>

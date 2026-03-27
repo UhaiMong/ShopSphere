@@ -1,7 +1,7 @@
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
-// import api from "../../services/api";
-import type { Cart, CartItem } from "../../types";
+
 import api from "@/services/app";
+import { Cart, CartItem } from "@/types/typeCart";
 
 interface CartState {
   cart: Cart | null;
@@ -17,7 +17,7 @@ const initialState: CartState = {
   error: null,
 };
 
-// ─── Thunks ───────────────────────────────────────────────────────────────────
+//  Thunks
 export const fetchCart = createAsyncThunk(
   "cart/fetch",
   async (_, { rejectWithValue }) => {
@@ -95,7 +95,7 @@ export const clearCartThunk = createAsyncThunk(
   },
 );
 
-// ─── Slice ────────────────────────────────────────────────────────────────────
+//  Slice
 const cartSlice = createSlice({
   name: "cart",
   initialState,
@@ -174,7 +174,7 @@ const cartSlice = createSlice({
 export const { clearCartState, optimisticUpdateQty } = cartSlice.actions;
 export default cartSlice.reducer;
 
-// ─── Selectors ────────────────────────────────────────────────────────────────
+// Selectors
 export const selectCart = (s: { cart: CartState }) => s.cart.cart;
 export const selectCartItemCount = (s: { cart: CartState }) =>
   s.cart.cart?.itemCount ?? 0;

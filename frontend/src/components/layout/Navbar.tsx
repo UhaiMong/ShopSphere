@@ -10,7 +10,6 @@ import {
   Heart,
   Package,
   ChevronDown,
-  Zap,
 } from "lucide-react";
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
 import {
@@ -25,9 +24,9 @@ import {
   selectIsMobileMenuOpen,
 } from "../../features/ui/uiSlice";
 // import { cn } from "../../utils";
-import { Button } from "../ui";
 import toast from "react-hot-toast";
-import { cn } from "@/uitls";
+import { cn } from "@/utils/cn";
+import { Button } from "../ui/Button";
 const LOGO = import.meta.env.VITE_LOGO;
 
 const NAV_LINKS = [
@@ -153,7 +152,7 @@ export const Navbar = () => {
               >
                 <ShoppingCart className="w-5 h-5" />
                 {cartCount > 0 && (
-                  <span className="absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] bg-brand-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center px-1 animate-fade-in">
+                  <span className="absolute -top-0.5 -right-0.5 min-w-4.5 h-4.5 bg-brand-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center px-1 animate-fade-in">
                     {cartCount > 99 ? "99+" : cartCount}
                   </span>
                 )}

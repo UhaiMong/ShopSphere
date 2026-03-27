@@ -3,122 +3,31 @@ import { useParams, Link, useNavigate } from "react-router-dom";
 import {
   ShoppingCart,
   Heart,
-  Star,
-  Check,
   ChevronRight,
   Minus,
   Plus,
-  Share2,
   Shield,
   Truck,
   RotateCcw,
 } from "lucide-react";
-// import api from '../../services/api';
-import type { Product, Review, ProductVariant } from "../../types";
 import { ProductCard } from "../../components/shared/ProductCard";
-import {
-  Button,
-  Badge,
-  StarRating,
-  SkeletonLine,
-  Spinner,
-} from "../../components/ui";
-import { useCart, useWishlist, useAuth } from "../../hooks";
-// import { formatPrice, getDiscountPercent, timeAgo, cn } from '@utils';
 import toast from "react-hot-toast";
 import api from "@/services/app";
-import { cn, formatPrice, getDiscountPercent, timeAgo } from "@/uitls";
-
-// ─── Image Gallery ────────────────────────────────────────────────────────────
-const ImageGallery = ({ images, name }: { images: string[]; name: string }) => {
-  const [active, setActive] = useState(0);
-
-  return (
-    <div className="flex flex-col gap-3">
-      {/* Main image */}
-      <div className="aspect-square rounded-2xl overflow-hidden bg-stone-50 border border-stone-100">
-        <img
-          src={images[active]}
-          alt={name}
-          className="w-full h-full object-cover"
-        />
-      </div>
-      {/* Thumbnails */}
-      {images.length > 1 && (
-        <div className="flex gap-2 overflow-x-auto pb-1">
-          {images.map((img, i) => (
-            <button
-              key={i}
-              onClick={() => setActive(i)}
-              className={cn(
-                "w-16 h-16 shrink-0 rounded-xl overflow-hidden border-2 transition-all",
-                i === active
-                  ? "border-brand-500"
-                  : "border-stone-100 hover:border-stone-200",
-              )}
-            >
-              <img src={img} alt="" className="w-full h-full object-cover" />
-            </button>
-          ))}
-        </div>
-      )}
-    </div>
-  );
-};
-
-// ─── Review Item ──────────────────────────────────────────────────────────────
-const ReviewItem = ({ review }: { review: Review }) => (
-  <div className="py-5 border-b border-stone-100 last:border-0">
-    <div className="flex items-start gap-3">
-      <div className="w-9 h-9 rounded-full bg-brand-100 flex items-center justify-center shrink-0">
-        {review.user.avatar ? (
-          <img
-            src={review.user.avatar}
-            alt=""
-            className="w-full h-full rounded-full object-cover"
-          />
-        ) : (
-          <span className="text-sm font-semibold text-brand-600">
-            {review.user.name.charAt(0)}
-          </span>
-        )}
-      </div>
-      <div className="flex-1">
-        <div className="flex items-center justify-between flex-wrap gap-2">
-          <div>
-            <span className="text-sm font-semibold text-stone-800">
-              {review.user.name}
-            </span>
-            {review.isVerifiedPurchase && (
-              <span className="ml-2 text-xs text-green-600 font-medium flex-inline items-center gap-0.5">
-                <Check className="w-3 h-3 inline" /> Verified Purchase
-              </span>
-            )}
-          </div>
-          <span className="text-xs text-stone-400">
-            {timeAgo(review.createdAt)}
-          </span>
-        </div>
-        <StarRating rating={review.rating} showCount={false} size="sm" />
-        {review.title && (
-          <p className="font-medium text-stone-800 text-sm mt-1">
-            {review.title}
-          </p>
-        )}
-        <p className="text-sm text-stone-600 mt-1 leading-relaxed">
-          {review.body}
-        </p>
-        {review.helpfulCount > 0 && (
-          <p className="text-xs text-stone-400 mt-2">
-            {review.helpfulCount} people found this helpful
-          </p>
-        )}
-      </div>
-    </div>
-  </div>
-);
-
-// ─── Product Detail Page ──────────────────────────────────────────────────────
+import { useCart } from "@/hooks/useCart";
+import { useWishlist } from "@/hooks/useWishlist";
+import { useAuth } from "@/hooks/useAuth";
+import { Product, ProductVariant } from "@/types/typeProduct";
+import { Review } from "@/types/typeReview";
+import { SkeletonLine } from "@/components/ui/SkeletonLine";
+import { getDiscountPercent } from "@/utils/product";
+import { ImageGallery } from "./ImageGallery";
+import { StarRating } from "@/components/ui/StarRating";
+import { formatPrice } from "@/utils/currency";
+import { Badge } from "@/components/ui/Badge";
+import { cn } from "@/utils/cn";
+import { Button } from "@/components/ui/Button";
+import { ReviewItem } from "./ReviewItem";
+// Product Detail Page
 export const ProductDetailPage = () => {
   const { slug } = useParams<{ slug: string }>();
   const navigate = useNavigate();

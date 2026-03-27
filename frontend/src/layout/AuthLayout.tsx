@@ -1,12 +1,10 @@
-import { Outlet } from "react-router";
+import { PageLoader } from "@/components/ui/PageLoader";
+import { Suspense } from "react";
+import { Outlet } from "react-router-dom";
 
-const AuthLayout = () => {
-  return (
-    <div>
-      <p>Auth layout design is here...</p>
-      <Outlet />
-    </div>
-  );
-};
-
-export default AuthLayout;
+// ── Auth Layout (no footer)
+export const AuthLayout = () => (
+  <Suspense fallback={<PageLoader />}>
+    <Outlet />
+  </Suspense>
+);

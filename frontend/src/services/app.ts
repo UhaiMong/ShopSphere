@@ -2,7 +2,7 @@ import axios, { AxiosError, InternalAxiosRequestConfig } from "axios";
 
 const BASE_URL = import.meta.env.VITE_API_URL ?? "/api/v1";
 
-// ─── Axios Instance ───────────────────────────────────────────────────────────
+// Axios Instance
 export const api = axios.create({
   baseURL: BASE_URL,
   withCredentials: true, // Send httpOnly refresh cookie automatically
@@ -10,7 +10,7 @@ export const api = axios.create({
   timeout: 15_000,
 });
 
-// ─── Request Interceptor: inject access token ─────────────────────────────────
+// Request Interceptor: inject access token
 api.interceptors.request.use((config: InternalAxiosRequestConfig) => {
   const token = localStorage.getItem("accessToken");
   if (token && config.headers) {
@@ -19,7 +19,7 @@ api.interceptors.request.use((config: InternalAxiosRequestConfig) => {
   return config;
 });
 
-// ─── Response Interceptor: auto-refresh on 401 ───────────────────────────────
+// Response Interceptor: auto-refresh on 401
 let isRefreshing = false;
 let failedQueue: Array<{
   resolve: (token: string) => void;

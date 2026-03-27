@@ -3,8 +3,14 @@ import { Link } from "react-router-dom";
 import { X, ShoppingCart, Trash2, ArrowRight, PackageOpen } from "lucide-react";
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
 import { closeCart, selectIsCartOpen } from "../../features/ui/uiSlice";
-import { Button, QuantitySelector, Spinner } from "../ui";
 import toast from "react-hot-toast";
+import { Button } from "../ui/Button";
+import { formatPrice } from "@/utils/currency";
+import { QuantitySelector } from "../ui/QuantitySelector";
+import { PageLoader } from "../ui/PageLoader";
+import { cn } from "@/utils/cn";
+import { removeCartItem } from "@/features/cart/cartSlice";
+import { useCart } from "@/hooks/useCart";
 
 export const CartDrawer = () => {
   const dispatch = useAppDispatch();
@@ -83,11 +89,7 @@ export const CartDrawer = () => {
 
         {/* Items */}
         <div className="flex-1 overflow-y-auto py-2">
-          {isMutating && (
-            <div className="absolute inset-0 bg-white/60 backdrop-blur-sm z-10 flex items-center justify-center">
-              <Spinner size="lg" />
-            </div>
-          )}
+          {isMutating && <PageLoader />}
 
           {!cart || cart.items.length === 0 ? (
             <div className="flex flex-col items-center justify-center h-full gap-4 px-6">
@@ -217,8 +219,3 @@ export const CartDrawer = () => {
     </>
   );
 };
-
-// Import needed for match check
-import { removeCartItem } from "../../features/cart/cartSlice";
-import { useCart } from "@/hooks";
-import { cn, formatPrice } from "@/uitls";

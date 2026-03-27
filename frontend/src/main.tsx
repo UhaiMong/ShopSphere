@@ -8,10 +8,6 @@ import { clearCartState } from "./features/cart/cartSlice";
 import { AppRouter } from "./routes/AppRouter";
 import "./global.css";
 
-// ─── App Shell ────────────────────────────────────────────────────────────────
-// Bootstraps auth state on every mount — if a valid access token exists in
-// localStorage the interceptor uses it; if expired, the refresh interceptor
-// kicks in automatically.
 const AppBootstrap = () => {
   useEffect(() => {
     const token = localStorage.getItem("accessToken");
@@ -34,7 +30,7 @@ const AppBootstrap = () => {
   return <AppRouter />;
 };
 
-// ─── Mount ────────────────────────────────────────────────────────────────────
+// Mount
 const root = document.getElementById("root");
 if (!root) throw new Error("Root element not found");
 
