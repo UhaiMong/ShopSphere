@@ -7,12 +7,12 @@ import { CreateMediaInput, MediaQuery, UpdateMediaInput } from './media.validato
 import { IMedia, Media } from '@/models/Media.model';
 
 export const mediaService = {
-  // getAll
+  // Get All media
   async getAll(query: MediaQuery): Promise<{
     media: IMedia[];
     pagination: PaginationMeta;
   }> {
-    const { page, limit, category } = query;
+    const { page, limit, category, search } = query;
 
     const filter: FilterQuery<MediaQuery> = {};
 
@@ -29,7 +29,9 @@ export const mediaService = {
       }
     }
 
-    // Full-text search using MongoDB text index
+    if (search) {
+      filter.$text = { $search: search };
+    }
 
     const skip = (page - 1) * limit;
 
@@ -44,18 +46,7 @@ export const mediaService = {
     };
   },
 
-  // getById
-  async getById(id: string): Promise<IMedia> {
-    const isObjectId = mongoose.isValidObjectId(id);
-    const filter: FilterQuery<MediaQuery> = isObjectId ? { _id: id } : { _id: id };
-
-    const media = await Media.findOne(filter).populate('category', 'title').lean<IMedia>();
-
-    if (!media) throw ApiError.notFound('Media');
-    return media;
-  },
-
-  // create
+  // create New media
   async create(
     data: CreateMediaInput,
     imgURL: string,
@@ -75,17 +66,16 @@ export const mediaService = {
     return media.toObject() as IMedia;
   },
 
-  // upldate by patch
   async updateByPatch(
     id: string,
     data: UpdateMediaInput,
-    newImage?: { url: string; publicId: string },
+    newImage?: { url: string; publicId: string; fileSize: number },
   ): Promise<IMedia> {
     const media = await Media.findById(id);
     if (!media) throw ApiError.notFound('Media');
 
     if (data.category) {
-      const category = await Category.findById(data.category); // ← was Media.findById
+      const category = await Category.findById(data.category);
       if (!category) throw ApiError.notFound('Category');
     }
 
@@ -96,6 +86,7 @@ export const mediaService = {
       }
       media.imgURL = newImage.url;
       media.publicId = newImage.publicId;
+      media.fileSize = newImage.fileSize;
     }
 
     Object.assign(media, data);
@@ -121,7 +112,6 @@ export const mediaService = {
 
     // Cloudinary public_id is already stored — use it directly
     const publicId = media.publicId;
-
     // Delete from Cloudinary first; if it fails, DB stays intact
     const cloudResult = await cloudinary.uploader.destroy(publicId);
     if (cloudResult.result !== 'ok' && cloudResult.result !== 'not found') {

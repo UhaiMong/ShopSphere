@@ -3,17 +3,13 @@ import { Link } from "react-router-dom";
 import {
   DollarSign,
   ShoppingCart,
-  Users,
   Package,
   TrendingUp,
-  AlertTriangle,
   ArrowRight,
 } from "lucide-react";
 import {
   AreaChart,
   Area,
-  BarChart,
-  Bar,
   PieChart,
   Pie,
   Cell,
@@ -22,16 +18,14 @@ import {
   CartesianGrid,
   Tooltip,
   ResponsiveContainer,
-  Legend,
 } from "recharts";
-// import { apiGet } from '../../services/api';
-import { StatCard, Badge, PageHeader, SkeletonRow } from "../../components/ui";
-import { OrderStatusBadge } from "../../components/layout";
-// import { formatPrice, formatNumber, formatDate, timeAgo } from '../../utils';
-// import type { Order, Product, OrderStatus } from '../../types';
+
 import { apiGet } from "@/services/api";
 import { formatNumber, formatPrice, timeAgo } from "@/utils";
 import { Order, Product } from "@/types";
+import { PageHeader } from "@/components/ui/PageHeader";
+import { StatCard } from "@/components/ui/StatCard";
+import { OrderStatusBadge } from "@/components/layout/OrderStatusBadge";
 
 // ─── Mock analytics (replace with real API when analytics endpoint exists) ────
 const generateRevenueSeries = () =>

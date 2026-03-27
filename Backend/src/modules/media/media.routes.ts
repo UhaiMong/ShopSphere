@@ -16,6 +16,7 @@ mediaRouter.get(
   validate(mediaQuerySchema, 'query'),
   mediaController.getAll,
 );
+// Media post
 mediaRouter.post(
   '/',
   protect,

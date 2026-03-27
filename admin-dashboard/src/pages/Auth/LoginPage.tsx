@@ -4,8 +4,9 @@ import { useForm } from "react-hook-form";
 import { Eye, EyeOff, Zap, ShieldCheck } from "lucide-react";
 import toast from "react-hot-toast";
 import { cn } from "@/utils";
-import { Button, Input } from "@/components/ui";
 import { adminLogin, useAppDispatch } from "@/app/store";
+import { Input } from "@/components/ui/Input";
+import { Button } from "@/components/ui/Button";
 
 export const LoginPage = () => {
   const dispatch = useAppDispatch();

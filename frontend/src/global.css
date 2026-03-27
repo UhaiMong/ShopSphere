@@ -1,9 +1,8 @@
+/*  Google Fonts  */
+@import url("https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&display=swap");
 @import "tailwindcss";
 
-/* ── Google Fonts ───────────────────────────────────────────────────────────── */
-@import url("https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&display=swap");
-
-/* ── Design Tokens ─────────────────────────────────────────────────────────── */
+/*  Design Tokens  */
 @theme {
   /* Brand */
   --color-brand-50: #fef3ee;
@@ -11,7 +10,7 @@
   --color-brand-200: #fbc4a2;
   --color-brand-300: #f89c68;
   --color-brand-400: #f56c2c;
-  --color-brand-500: #f25212; /* Primary accent */
+  --color-brand-500: #f25212;
   --color-brand-600: #e33a09;
   --color-brand-700: #bc2b0a;
   --color-brand-800: #952510;

@@ -13,8 +13,15 @@ export const mediaQuerySchema = z.object({
   page: z.coerce.number().int().positive().default(1),
   limit: z.coerce.number().int().min(1).max(50).default(20),
   category: z.string().optional(),
+  search: z.string().optional(),
+});
+
+export const singleMediaQuerySchema = z.object({
+  title: z.string().optional(),
+  category: z.string().optional(),
 });
 
 export type CreateMediaInput = z.infer<typeof createMediaSchema>;
 export type UpdateMediaInput = z.infer<typeof updatMediaSchema>;
 export type MediaQuery = z.infer<typeof mediaQuerySchema>;
+export type MediaQuerySingle = z.infer<typeof singleMediaQuerySchema>;

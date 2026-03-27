@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
-import { Zap, Mail, Phone, MapPin } from "lucide-react";
+import { Mail, Phone, MapPin } from "lucide-react";
 import { FaFacebook, FaInstagram, FaTwitter } from "react-icons/fa";
+const LOGO = import.meta.env.VITE_LOGO;
 
 const LINKS = {
   Shop: [
@@ -30,15 +31,10 @@ export const Footer = () => (
         {/* Brand */}
         <div className="lg:col-span-2">
           <Link to="/" className="flex items-center gap-2 mb-5">
-            <div className="w-8 h-8 bg-brand-500 rounded-lg flex items-center justify-center">
-              <Zap className="w-4.5 h-4.5 text-white" fill="currentColor" />
+            {/* Logo */}
+            <div className="w-52 h-auto rounded-lg flex items-center justify-center">
+              <img src={LOGO} className="w-full h-full object-cover" />
             </div>
-            <span
-              style={{ fontFamily: "Syne, sans-serif" }}
-              className="text-xl font-bold text-white"
-            >
-              Shop<span className="text-brand-400">Sphere</span>
-            </span>
           </Link>
           <p className="text-sm text-stone-500 leading-relaxed max-w-xs mb-6">
             A modern e-commerce platform delivering quality products with a

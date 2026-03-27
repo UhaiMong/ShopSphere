@@ -1,15 +1,15 @@
-import { Outlet } from "react-router";
-import TopBar from "../components/layout/TopBar";
-import Sidebar from "../components/layout/Sidebar";
+// import { Sidebar } from "@/components/layout/Sidebar";
+// import { TopBar } from "@/components/layout/TopBar";
+// import { Outlet } from "react-router";
 
-const MainLayout = () => {
-  return (
-    <div>
-      <TopBar />
-      <Outlet />
-      <Sidebar />
-    </div>
-  );
-};
+// const MainLayout = () => {
+//   return (
+//     <div>
+//       <TopBar />
+//       <Outlet />
+//       <Sidebar />
+//     </div>
+//   );
+// };
 
-export default MainLayout;
+// export default MainLayout;

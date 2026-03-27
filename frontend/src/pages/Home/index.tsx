@@ -8,15 +8,13 @@ import {
   Headphones,
   Zap,
 } from "lucide-react";
-// import api from '../../services/api';
 import type { Product, Category } from "../../types";
 import { ProductCard } from "../../components/shared/ProductCard";
 import { SkeletonProductCard, Button } from "../../components/ui";
-// import { cn } from '../../utils';
 import api from "@/services/app";
 import { cn } from "@/uitls";
 
-// ─── Hero ─────────────────────────────────────────────────────────────────────
+// Hero
 const Hero = () => {
   const navigate = useNavigate();
   const [search, setSearch] = useState("");
@@ -104,7 +102,7 @@ const Hero = () => {
   );
 };
 
-// ─── Category Grid ────────────────────────────────────────────────────────────
+//  Category Grid
 const CategoryGrid = ({ categories }: { categories: Category[] }) => {
   const rootCats = categories
     .filter((c) => !c.parent && c.isActive)
@@ -160,7 +158,7 @@ const CategoryGrid = ({ categories }: { categories: Category[] }) => {
   );
 };
 
-// ─── Value Props ──────────────────────────────────────────────────────────────
+// Value Props
 const ValueProps = () => {
   const items = [
     {
@@ -208,7 +206,7 @@ const ValueProps = () => {
   );
 };
 
-// ─── Product Section ──────────────────────────────────────────────────────────
+//  Product Section
 const ProductSection = ({
   title,
   subtitle,
@@ -272,7 +270,7 @@ const ProductSection = ({
   </section>
 );
 
-// ─── CTA Banner ───────────────────────────────────────────────────────────────
+//  CTA Banner
 const CTABanner = () => (
   <section className="py-8">
     <div className="container-app">
@@ -312,7 +310,7 @@ const CTABanner = () => (
   </section>
 );
 
-// ─── Home Page ────────────────────────────────────────────────────────────────
+//  Home Page
 export const HomePage = () => {
   const [featured, setFeatured] = useState<Product[]>([]);
   const [popular, setPopular] = useState<Product[]>([]);
@@ -340,6 +338,8 @@ export const HomePage = () => {
       })
       .catch(() => setIsPopularLoading(false));
   }, []);
+
+  console.log("Featured: ", featured, "Popular: ", "Categories: ", categories);
 
   return (
     <div>

@@ -17,7 +17,7 @@ import { cn } from "@/uitls";
 import api from "@/services/app";
 // import { cn, formatPrice } from '../../utils';
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
+// Helpers
 const SORT_OPTIONS = [
   { value: "newest", label: "Newest First" },
   { value: "popular", label: "Most Popular" },
@@ -26,7 +26,7 @@ const SORT_OPTIONS = [
   { value: "rating", label: "Highest Rated" },
 ];
 
-// ─── Filter Accordion Section ─────────────────────────────────────────────────
+// Filter Accordion Section
 const FilterSection = ({
   title,
   children,
@@ -55,7 +55,7 @@ const FilterSection = ({
   );
 };
 
-// ─── Filters Panel ────────────────────────────────────────────────────────────
+// Filters Panel
 const FiltersPanel = ({
   filters,
   categories,
@@ -188,7 +188,7 @@ const FiltersPanel = ({
   );
 };
 
-// ─── Product List Page ────────────────────────────────────────────────────────
+// Product List Page
 export const ProductListPage = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const [categories, setCategories] = useState<Category[]>([]);

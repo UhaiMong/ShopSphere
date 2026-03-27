@@ -1,28 +1,77 @@
-import { createBrowserRouter } from "react-router";
-import AuthLayout from "../layout/AuthLayout";
-import MainLayout from "../layout/MainLayout";
+import { lazy, Suspense } from "react";
+import { createBrowserRouter, Navigate } from "react-router-dom";
 
-const router = createBrowserRouter([
+import { PageLoader } from "@/components/ui/PageLoader";
+import { ProtectedRoute } from "./ProtectedRoute";
+
+// ── Lazy pages
+const LoginPage = lazy(() =>
+  import("../pages/Auth/LoginPage").then((m) => ({ default: m.LoginPage })),
+);
+const DashboardPage = lazy(() =>
+  import("../pages/Dashboard/DashboardPage").then((m) => ({
+    default: m.DashboardPage,
+  })),
+);
+const ProductsPage = lazy(() =>
+  import("../pages/Products/ProductsPage").then((m) => ({
+    default: m.ProductsPage,
+  })),
+);
+const OrdersPage = lazy(() =>
+  import("../pages/Orders/OrdersPage").then((m) => ({ default: m.OrdersPage })),
+);
+const OrderDetailPage = lazy(() =>
+  import("../pages/Orders/OrderDetailPage").then((m) => ({
+    default: m.OrderDetailPage,
+  })),
+);
+const MediaPage = lazy(() =>
+  import("../pages/Media/MediaPage").then((m) => ({ default: m.MediaPage })),
+);
+const UsersPage = lazy(() =>
+  import("../pages/Users/UsersPage").then((m) => ({ default: m.UsersPage })),
+);
+const CategoriesPage = lazy(() =>
+  import("../pages/Categories/CategoriesPage").then((m) => ({
+    default: m.CategoriesPage,
+  })),
+);
+const AnalyticsPage = lazy(() =>
+  import("../pages/Analytics/AnalyticsPage").then((m) => ({
+    default: m.AnalyticsPage,
+  })),
+);
+const SettingsPage = lazy(() =>
+  import("../pages/Settings/SettingsPage").then((m) => ({
+    default: m.SettingsPage,
+  })),
+);
+
+// Routes
+export const router = createBrowserRouter([
   {
-    element: <AuthLayout />,
-    children: [
-      {
-        path: "admin/dashboard/login",
-        element: <h3>Login page</h3>,
-      },
-    ],
+    path: "/auth/login",
+    element: (
+      <Suspense fallback={<PageLoader />}>
+        <LoginPage />
+      </Suspense>
+    ),
   },
   {
-    path: "",
-    element: <MainLayout />,
+    path: "/",
+    element: <ProtectedRoute />,
     children: [
-      { path: "", element: <div>Dashboard</div> },
-      { path: "/products", element: <div>Product page</div> },
+      { index: true, element: <DashboardPage /> },
+      { path: "products", element: <ProductsPage /> },
+      { path: "orders", element: <OrdersPage /> },
+      { path: "orders/:id", element: <OrderDetailPage /> },
+      { path: "users", element: <UsersPage /> },
+      { path: "categories", element: <CategoriesPage /> },
+      { path: "media", element: <MediaPage /> },
+      { path: "analytics", element: <AnalyticsPage /> },
+      { path: "settings", element: <SettingsPage /> },
+      { path: "*", element: <Navigate to="/" replace /> },
     ],
-  },
-  {
-    path: "*",
-    element: <div>Not found page</div>,
   },
 ]);
-export default router;

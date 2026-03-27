@@ -180,7 +180,7 @@ export interface Media {
   _id: string;
   title: string;
   alt: string;
-  imgURL: string;
+  imgURL: string[] | string;
   publicId: string;
   category: string;
   fileSize: string;

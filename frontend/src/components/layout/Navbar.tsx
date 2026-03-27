@@ -28,6 +28,7 @@ import {
 import { Button } from "../ui";
 import toast from "react-hot-toast";
 import { cn } from "@/uitls";
+const LOGO = import.meta.env.VITE_LOGO;
 
 const NAV_LINKS = [
   { to: "/products", label: "Shop" },
@@ -90,15 +91,9 @@ export const Navbar = () => {
           <div className="flex items-center gap-4 h-16">
             {/* Logo */}
             <Link to="/" className="flex items-center gap-2 shrink-0 group">
-              <div className="w-8 h-8 bg-brand-500 rounded-lg flex items-center justify-center">
-                <Zap className="w-4.5 h-4.5 text-white" fill="currentColor" />
+              <div className="w-52 h-auto rounded-lg flex items-center justify-center">
+                <img src={LOGO} className="w-full h-full object-cover" />
               </div>
-              <span
-                style={{ fontFamily: "Syne, sans-serif" }}
-                className="text-xl font-bold text-stone-900 tracking-tight"
-              >
-                Shop<span className="text-brand-500">Sphere</span>
-              </span>
             </Link>
 
             {/* Desktop Nav */}

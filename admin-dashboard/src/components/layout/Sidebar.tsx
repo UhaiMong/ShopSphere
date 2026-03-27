@@ -1,9 +1,186 @@
-const Sidebar = () => {
+import { NavLink, useNavigate } from "react-router-dom";
+import {
+  LayoutDashboard,
+  Package,
+  ShoppingCart,
+  Users,
+  Tag,
+  BarChart2,
+  Settings,
+  LogOut,
+  ChevronLeft,
+  ChevronRight,
+  Zap,
+  Images,
+  ArrowLeftSquare,
+  ArrowRightCircle,
+  ArrowRightSquare,
+} from "lucide-react";
+import {
+  useAppDispatch,
+  useAppSelector,
+  adminLogout,
+  selectAdmin,
+} from "../../app/store";
+import toast from "react-hot-toast";
+import { cn } from "@/utils";
+
+//  Nav items
+const NAV = [
+  { to: "/", icon: LayoutDashboard, label: "Dashboard" },
+  { to: "/products", icon: Package, label: "Products" },
+  { to: "/orders", icon: ShoppingCart, label: "Orders" },
+  { to: "/users", icon: Users, label: "Users" },
+  { to: "/categories", icon: Tag, label: "Categories" },
+  { to: "/media", icon: Images, label: "Media" },
+  { to: "/analytics", icon: BarChart2, label: "Analytics" },
+];
+
+// SIDEBAR
+
+export const Sidebar = ({
+  collapsed,
+  onToggle,
+  onNavigate,
+}: {
+  collapsed: boolean;
+  onToggle: () => void;
+  onNavigate: () => void;
+}) => {
+  const dispatch = useAppDispatch();
+  const navigate = useNavigate();
+  const admin = useAppSelector(selectAdmin);
+
+  const handleLogout = async () => {
+    await dispatch(adminLogout());
+    toast.success("Logged out");
+    navigate("/auth/login");
+  };
+
   return (
-    <div>
-      <h1>Sidebar</h1>
-    </div>
+    <aside
+      className={cn(
+        "fixed top-0 left-0 z-40 h-screen flex flex-col bg-zinc-950 border-r border-zinc-800/60",
+        "transition-all duration-300",
+        collapsed ? "w-16" : "w-60",
+      )}
+    >
+      {/* Logo */}
+      <div
+        className={cn(
+          "flex items-center gap-2.5 px-4 h-14 border-b border-zinc-800/60 shrink-0",
+          collapsed && "justify-center",
+        )}
+      >
+        <div className="w-7 h-7 bg-orange-500 rounded-lg flex items-center justify-center shrink-0">
+          <Zap className="w-4 h-4 text-white" fill="currentColor" />
+        </div>
+        {!collapsed && (
+          <div>
+            <p className="text-sm font-bold text-zinc-100 leading-none">
+              ShopSphere
+            </p>
+            <p className="text-[10px] text-zinc-500 mt-0.5">Admin Panel</p>
+          </div>
+        )}
+      </div>
+
+      {/* Nav */}
+      <nav className="flex-1 overflow-y-auto py-3 px-2 space-y-0.5">
+        {/* Collapse toggle */}
+        <button
+          onClick={onToggle}
+          className={cn(
+            "flex items-center w-full justify-end gap-3 rounded-lg px-3 py-2 text-xs text-zinc-600 hover:text-zinc-300 hover:bg-zinc-800/60 transition-colors",
+            collapsed && "justify-center",
+          )}
+        >
+          {collapsed ? (
+            <ArrowRightSquare size={16} />
+          ) : (
+            <>
+              <ArrowLeftSquare size={16} />
+            </>
+          )}
+        </button>
+        {NAV.map(({ to, icon: Icon, label }) => (
+          <NavLink
+            key={to}
+            to={to}
+            end={to === "/"}
+            onClick={onNavigate}
+            className={({ isActive }) =>
+              cn(
+                "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-150 group",
+                collapsed ? "justify-center" : "",
+                isActive
+                  ? "bg-orange-500/10 text-orange-400 border border-orange-500/20"
+                  : "text-zinc-500 hover:text-zinc-100 hover:bg-zinc-800/60",
+              )
+            }
+            title={collapsed ? label : undefined}
+          >
+            <Icon className="w-4 h-4 shrink-0" />
+            {!collapsed && <span>{label}</span>}
+          </NavLink>
+        ))}
+      </nav>
+
+      {/* Bottom: user + collapse */}
+      <div className="border-t border-zinc-800/60 p-2 space-y-1 shrink-0">
+        <NavLink
+          to="/settings"
+          className={({ isActive }) =>
+            cn(
+              "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors",
+              collapsed ? "justify-center" : "",
+              isActive
+                ? "bg-zinc-800 text-zinc-100"
+                : "text-zinc-500 hover:text-zinc-100 hover:bg-zinc-800/60",
+            )
+          }
+          title={collapsed ? "Settings" : undefined}
+        >
+          <Settings className="w-4 h-4 shrink-0" />
+          {!collapsed && <span>Settings</span>}
+        </NavLink>
+
+        {/* User */}
+        <div
+          className={cn(
+            "flex items-center gap-3 px-3 py-2",
+            collapsed && "justify-center",
+          )}
+        >
+          <div className="w-7 h-7 rounded-lg bg-orange-500/20 flex items-center justify-center shrink-0">
+            <span className="text-xs font-bold text-orange-400">
+              {admin?.name?.charAt(0).toUpperCase() ?? "A"}
+            </span>
+          </div>
+          {!collapsed && (
+            <div className="flex-1 min-w-0">
+              <p className="text-xs font-medium text-zinc-300 truncate">
+                {admin?.name}
+              </p>
+              <p className="text-[10px] text-zinc-600 truncate capitalize">
+                {admin?.role}
+              </p>
+            </div>
+          )}
+        </div>
+
+        <button
+          onClick={handleLogout}
+          className={cn(
+            "flex items-center gap-3 w-full rounded-lg px-3 py-2 text-sm text-zinc-500 hover:text-red-400 hover:bg-red-500/5 transition-colors",
+            collapsed && "justify-center",
+          )}
+          title="Sign out"
+        >
+          <LogOut className="w-4 h-4 shrink-0" />
+          {!collapsed && <span>Sign out</span>}
+        </button>
+      </div>
+    </aside>
   );
 };
-
-export default Sidebar;
