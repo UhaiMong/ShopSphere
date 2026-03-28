@@ -1,4 +1,4 @@
-// ─── product.controller.ts ───────────────────────────────────────────────────
+// product.controller.ts
 import { Request, Response } from 'express';
 import { productService } from './product.service';
 import { ApiResponse } from '../../utils/ApiResponse';
@@ -35,7 +35,6 @@ export const productController = {
 
   // POST /products  (admin)
   create: catchAsync(async (req: Request, res: Response) => {
-    // ✅ images come from req.body (sent by MediaPicker), not uploadedUrls middleware
     const { images = [], ...rest } = req.body;
     const product = await productService.create(rest as CreateProductInput, images as string[]);
     ApiResponse.created(res, product, 'Product created successfully');
@@ -43,7 +42,6 @@ export const productController = {
 
   // PUT /products/:id  (admin)
   update: catchAsync(async (req: Request, res: Response) => {
-    // ✅ pass the full images array from the body — service will replace, not append
     const { images = [], ...rest } = req.body;
     const product = await productService.update(
       req.params.id,

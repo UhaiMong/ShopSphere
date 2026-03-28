@@ -1,7 +1,6 @@
 import { Router } from 'express';
 import { protect, requireRole, optionalAuth } from '../../middleware/auth.middleware';
 import { validate } from '../../middleware/validate.middleware';
-import { upload, processImages } from '../../middleware/upload.middleware';
 import { createProductSchema, updateProductSchema, productQuerySchema } from './product.validator';
 import { productController } from './product.controller';
 

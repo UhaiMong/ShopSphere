@@ -21,6 +21,7 @@ import { reviewRouter } from './modules/reviews/review.controller';
 import { wishlistRouter } from './modules/wishlist/wishlist.controller';
 import { productRouter } from './modules/products/product.routes';
 import { mediaRouter } from './modules/media/media.routes';
+import { heroRouter } from './modules/hero/hero.routes';
 
 // App Factory
 export const createApp = (): Application => {
@@ -111,6 +112,7 @@ export const createApp = (): Application => {
   app.use(`${API}/wishlist`, wishlistRouter);
   app.use(`${API}/users`, userRouter);
   app.use(`${API}/media`, mediaRouter);
+  app.use(`${API}/hero`, heroRouter);
 
   //  Admin Routes
   app.use(`${API}/admin/orders`, adminOrderRouter);
