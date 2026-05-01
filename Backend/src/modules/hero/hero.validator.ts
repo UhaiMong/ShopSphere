@@ -8,6 +8,7 @@ export const createHeroSchema = z.object({
   ctaText: z.string().max(100).optional(),
   ctaLink: z.string().url().trim(),
   backgroundImage: z.string().url().trim(),
+  isActive: z.boolean().default(true),
 });
 
 export const updageHeroSchema = createHeroSchema.partial();

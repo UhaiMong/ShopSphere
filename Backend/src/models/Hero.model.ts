@@ -10,6 +10,7 @@ export interface HeroSlide {
   ctaText: string;
   ctaLink: string;
   backgroundImage: string;
+  isActive: boolean;
 }
 
 // Hero Schema
@@ -40,6 +41,10 @@ const HeroSchema = new Schema<HeroSlide>(
       trim: true,
     },
     backgroundImage: { type: String, trim: true, required: [true, 'Image is required'] },
+    isActive: {
+      type: Boolean,
+      default: true,
+    },
   },
   {
     timestamps: true,

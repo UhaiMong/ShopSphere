@@ -1,11 +1,5 @@
-import mongoose, { Schema, Model, Document } from "mongoose";
-import {
-  OrderStatus,
-  PaymentStatus,
-  PaymentMethod,
-  IOrderItem,
-  IAddress,
-} from "../types/index";
+import mongoose, { Schema, Model, Document } from 'mongoose';
+import { OrderStatus, PaymentStatus, PaymentMethod, IOrderItem, IAddress } from '../types/index';
 
 // Interfaces
 export interface IOrderTimelineEvent {
@@ -39,7 +33,7 @@ export interface IOrder extends Document {
   total: number;
   coupon?: {
     code: string;
-    type: "percentage" | "fixed";
+    type: 'percentage' | 'fixed';
     value: number;
   };
   notes?: string;
@@ -53,7 +47,7 @@ export interface IOrder extends Document {
 //  Sub-Schemas
 const orderItemSchema = new Schema<IOrderItem>(
   {
-    product: { type: Schema.Types.ObjectId, ref: "Product", required: true },
+    product: { type: Schema.Types.ObjectId, ref: 'Product', required: true },
     name: { type: String, required: true },
     image: { type: String, required: true },
     price: { type: Number, required: true },
@@ -97,7 +91,7 @@ const orderSchema = new Schema<IOrder>(
     },
     user: {
       type: Schema.Types.ObjectId,
-      ref: "User",
+      ref: 'User',
       required: true,
       index: true,
     },
@@ -106,35 +100,27 @@ const orderSchema = new Schema<IOrder>(
       required: true,
       validate: {
         validator: (v: unknown[]) => v.length > 0,
-        message: "Order must have at least one item",
+        message: 'Order must have at least one item',
       },
     },
     shippingAddress: { type: addressSnapshotSchema, required: true },
     status: {
       type: String,
-      enum: [
-        "pending",
-        "confirmed",
-        "processing",
-        "shipped",
-        "delivered",
-        "cancelled",
-        "refunded",
-      ],
-      default: "pending",
+      enum: ['pending', 'confirmed', 'processing', 'shipped', 'delivered', 'cancelled', 'refunded'],
+      default: 'pending',
       index: true,
     },
     timeline: { type: [timelineSchema], default: [] },
     payment: {
       method: {
         type: String,
-        enum: ["stripe", "sslcommerz", "paypal", "cod"],
+        enum: ['stripe', 'sslcommerz', 'paypal', 'cod'],
         required: true,
       },
       status: {
         type: String,
-        enum: ["pending", "paid", "failed", "refunded"],
-        default: "pending",
+        enum: ['pending', 'paid', 'failed', 'refunded'],
+        default: 'pending',
       },
       gateway: String,
       transactionId: String,
@@ -150,7 +136,7 @@ const orderSchema = new Schema<IOrder>(
     total: { type: Number, required: true, min: 0 },
     coupon: {
       code: String,
-      type: { type: String, enum: ["percentage", "fixed"] },
+      type: { type: String, enum: ['percentage', 'fixed'] },
       value: Number,
     },
     notes: String,
@@ -165,26 +151,21 @@ const orderSchema = new Schema<IOrder>(
 );
 
 // Pre-save: auto-generate order number
-orderSchema.pre("save", async function (next) {
+orderSchema.pre('save', async function (next) {
   if (this.isNew) {
     const count = await Order.countDocuments();
     const year = new Date().getFullYear();
-    this.orderNumber = `SS-${year}-${String(count + 1).padStart(5, "0")}`;
+    this.orderNumber = `SS-${year}-${String(count + 1).padStart(5, '0')}`;
 
     // Add initial timeline event
-    this.timeline.push({ status: "pending", timestamp: new Date() });
+    this.timeline.push({ status: 'pending', timestamp: new Date() });
   }
   next();
 });
 
 //  Indexes
-orderSchema.index({ user: 1, createdAt: -1 });
 orderSchema.index({ status: 1, createdAt: -1 });
-orderSchema.index({ "payment.status": 1 });
-orderSchema.index({ orderNumber: 1 });
+orderSchema.index({ 'payment.status': 1 });
 
 // Model
-export const Order: Model<IOrder> = mongoose.model<IOrder>(
-  "Order",
-  orderSchema,
-);
+export const Order: Model<IOrder> = mongoose.model<IOrder>('Order', orderSchema);

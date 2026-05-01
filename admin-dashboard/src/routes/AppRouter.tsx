@@ -29,6 +29,9 @@ const OrderDetailPage = lazy(() =>
 const MediaPage = lazy(() =>
   import("../pages/Media/MediaPage").then((m) => ({ default: m.MediaPage })),
 );
+const HeroPage = lazy(() =>
+  import("../pages/Hero/HeroPage").then((m) => ({ default: m.HeroPage })),
+);
 const UsersPage = lazy(() =>
   import("../pages/Users/UsersPage").then((m) => ({ default: m.UsersPage })),
 );
@@ -69,6 +72,7 @@ export const router = createBrowserRouter([
       { path: "users", element: <UsersPage /> },
       { path: "categories", element: <CategoriesPage /> },
       { path: "media", element: <MediaPage /> },
+      { path: "hero", element: <HeroPage /> },
       { path: "analytics", element: <AnalyticsPage /> },
       { path: "settings", element: <SettingsPage /> },
       { path: "*", element: <Navigate to="/" replace /> },

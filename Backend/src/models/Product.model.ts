@@ -1,5 +1,5 @@
-import mongoose, { Schema, Model, Document } from "mongoose";
-import slugify from "slugify";
+import mongoose, { Schema, Model, Document } from 'mongoose';
+import slugify from 'slugify';
 
 // Interfaces
 export interface IProductVariant {
@@ -56,24 +56,24 @@ const productSchema = new Schema<IProduct>(
   {
     name: {
       type: String,
-      required: [true, "Product name is required"],
+      required: [true, 'Product name is required'],
       trim: true,
-      maxlength: [200, "Product name must not exceed 200 characters"],
+      maxlength: [200, 'Product name must not exceed 200 characters'],
     },
     slug: { type: String, unique: true, lowercase: true },
     description: {
       type: String,
-      required: [true, "Description is required"],
-      maxlength: [5000, "Description must not exceed 5000 characters"],
+      required: [true, 'Description is required'],
+      maxlength: [5000, 'Description must not exceed 5000 characters'],
     },
     shortDescription: {
       type: String,
-      maxlength: [300, "Short description must not exceed 300 characters"],
+      maxlength: [300, 'Short description must not exceed 300 characters'],
     },
     price: {
       type: Number,
-      required: [true, "Price is required"],
-      min: [0, "Price cannot be negative"],
+      required: [true, 'Price is required'],
+      min: [0, 'Price cannot be negative'],
     },
     comparePrice: {
       type: Number,
@@ -82,13 +82,13 @@ const productSchema = new Schema<IProduct>(
         validator: function (this: IProduct, v: number) {
           return !v || v > this.price;
         },
-        message: "Compare price must be greater than the selling price",
+        message: 'Compare price must be greater than the selling price',
       },
     },
     category: {
       type: Schema.Types.ObjectId,
-      ref: "Category",
-      required: [true, "Category is required"],
+      ref: 'Category',
+      required: [true, 'Category is required'],
       index: true,
     },
     brand: { type: String, trim: true },
@@ -98,7 +98,7 @@ const productSchema = new Schema<IProduct>(
     stock: {
       type: Number,
       required: true,
-      min: [0, "Stock cannot be negative"],
+      min: [0, 'Stock cannot be negative'],
       default: 0,
     },
     sku: { type: String, trim: true, sparse: true },
@@ -117,28 +117,26 @@ const productSchema = new Schema<IProduct>(
   },
   {
     timestamps: true,
-    versionKey: "__v",
+    versionKey: '__v',
     toJSON: { virtuals: true },
   },
 );
 
 // Virtual: discount percentage
-productSchema.virtual("discountPercentage").get(function () {
+productSchema.virtual('discountPercentage').get(function () {
   if (!this.comparePrice || this.comparePrice <= this.price) return 0;
-  return Math.round(
-    ((this.comparePrice - this.price) / this.comparePrice) * 100,
-  );
+  return Math.round(((this.comparePrice - this.price) / this.comparePrice) * 100);
 });
 
 // Virtual: inStock
-productSchema.virtual("inStock").get(function () {
+productSchema.virtual('inStock').get(function () {
   return this.stock > 0;
 });
 
 // Pre-save: auto-slug + thumbnail
-productSchema.pre("save", async function (next) {
+productSchema.pre('save', async function (next) {
   // Slug generation
-  if (this.isModified("name") || this.isNew) {
+  if (this.isModified('name') || this.isNew) {
     let baseSlug = slugify(this.name, { lower: true, strict: true });
     let slug = baseSlug;
     let counter = 1;
@@ -149,7 +147,7 @@ productSchema.pre("save", async function (next) {
   }
 
   // Auto-set thumbnail from first image
-  if (this.isModified("images") && this.images.length > 0) {
+  if (this.isModified('images') && this.images.length > 0) {
     this.thumbnail = this.images[0];
   }
 
@@ -158,7 +156,7 @@ productSchema.pre("save", async function (next) {
 
 //  Static: recalculate avgRating
 productSchema.statics.recalculateRating = async function (productId: string) {
-  const Review = mongoose.model("Review");
+  const Review = mongoose.model('Review');
   const stats = await Review.aggregate([
     {
       $match: {
@@ -168,8 +166,8 @@ productSchema.statics.recalculateRating = async function (productId: string) {
     },
     {
       $group: {
-        _id: "$product",
-        avgRating: { $avg: "$rating" },
+        _id: '$product',
+        avgRating: { $avg: '$rating' },
         count: { $sum: 1 },
       },
     },
@@ -186,16 +184,12 @@ productSchema.statics.recalculateRating = async function (productId: string) {
 };
 
 // Indexes
-productSchema.index({ name: "text", description: "text", tags: "text" }); // Full-text search
-productSchema.index({ category: 1, isActive: 1, price: 1 });
+productSchema.index({ name: 'text', description: 'text', tags: 'text' });
+productSchema.index({ isActive: 1, price: 1 });
 productSchema.index({ isActive: 1, isFeatured: 1 });
 productSchema.index({ isActive: 1, avgRating: -1 });
 productSchema.index({ isActive: 1, soldCount: -1 });
 productSchema.index({ isActive: 1, createdAt: -1 });
-productSchema.index({ slug: 1 });
 
 // Model
-export const Product: Model<IProduct> = mongoose.model<IProduct>(
-  "Product",
-  productSchema,
-);
+export const Product: Model<IProduct> = mongoose.model<IProduct>('Product', productSchema);

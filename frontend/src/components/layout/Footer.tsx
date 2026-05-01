@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { Mail, Phone, MapPin } from "lucide-react";
 import { FaFacebook, FaInstagram, FaTwitter } from "react-icons/fa";
+import { BGSquareBox } from "../ui/BGSquareBox";
 const LOGO = import.meta.env.VITE_LOGO;
 
 const LINKS = {
@@ -25,7 +26,8 @@ const LINKS = {
 };
 
 export const Footer = () => (
-  <footer className="bg-stone-950 text-stone-400 mt-24">
+  <footer className="bg-stone-950 text-stone-400 mt-24 relative overflow-hidden">
+    <BGSquareBox />
     <div className="container-app py-16">
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-10">
         {/* Brand */}
@@ -82,7 +84,7 @@ export const Footer = () => (
         ))}
       </div>
 
-      <div className="border-t border-stone-800 mt-12 pt-8 flex flex-col sm:flex-row items-center justify-between gap-4">
+      <div className="mt-12 pt-8 flex flex-col sm:flex-row items-center justify-between gap-4">
         <p className="text-sm text-stone-600">
           © {new Date().getFullYear()} ShopSphere. All rights reserved.
         </p>
@@ -102,6 +104,14 @@ export const Footer = () => (
           ))}
         </div>
       </div>
+    </div>
+    <div className="container-app">
+      <h1 className="text-3xl my-4 font-semibold">Pay with:</h1>
+      <img
+        className="max-w-3xl h-auto object-cover"
+        src="ssl_commerze_gatway.png"
+        alt="payment"
+      />
     </div>
   </footer>
 );

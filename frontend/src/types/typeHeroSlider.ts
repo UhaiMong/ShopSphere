@@ -7,4 +7,5 @@ export interface HeroSlide {
   ctaText: string;
   ctaLink: string;
   backgroundImage: string;
+  isActive: boolean;
 }

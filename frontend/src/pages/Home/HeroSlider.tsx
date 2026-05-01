@@ -3,50 +3,37 @@ import { motion, AnimatePresence } from "framer-motion";
 import { api } from "@/services/app";
 import { HeroSlide } from "@/types/typeHeroSlider";
 import { Spinner } from "@/components/ui/Spinner";
+import toast from "react-hot-toast";
 
-// --- Component ---
 export const HeroSlider: React.FC = () => {
+  const [[page, direction], setPage] = useState([0, 0]);
   const [slides, setSlides] = useState<HeroSlide[]>([]);
-  const [currentIndex, setCurrentIndex] = useState(0);
+  //   const [currentIndex, setCurrentIndex] = useState(0);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
+  const [error, setError] = useState<string | unknown>(null);
   const AUTO_PLAY_INTERVAL = 5000;
   const dragThreshold = 50;
-
-  // Fetch slider
+  const currentIndex = Math.abs(page % slides.length);
+  const nextSlide = useCallback(() => {
+    setPage([page + 1, 1]); // 1 indicates forward
+  }, [page, slides.length]);
+  const prevSlide = useCallback(() => {
+    setPage([page - 1, -1]);
+  }, [page, slides.length]);
 
   useEffect(() => {
-    const fetchHeroData = async () => {
-      try {
-        setLoading(true);
-        const response = await api.get("/hero");
-        setSlides(response.data);
-      } catch (err) {
-        setError("Failed to load hero content.");
-        console.error("Hero API Error:", err);
-      } finally {
+    try {
+      void api.get<{ data: HeroSlide[] }>(`/hero`).then(({ data }) => {
+        setSlides(data.data);
         setLoading(false);
-      }
-    };
-
-    fetchHeroData();
+      });
+    } catch (error) {
+      setLoading(false);
+      setError(error);
+      toast.error("Failed to load slider");
+    }
   }, []);
 
-  /**
-   * Navigation Logic
-   */
-  const nextSlide = useCallback(() => {
-    setCurrentIndex((prev) => (prev === slides.length - 1 ? 0 : prev + 1));
-  }, [slides.length]);
-
-  const prevSlide = useCallback(() => {
-    setCurrentIndex((prev) => (prev === 0 ? slides.length - 1 : prev - 1));
-  }, [slides.length]);
-
-  /**
-   * Auto-slide Effect
-   */
   useEffect(() => {
     if (slides.length <= 1) return;
 
@@ -56,6 +43,10 @@ export const HeroSlider: React.FC = () => {
 
     return () => clearInterval(timer);
   }, [nextSlide, slides.length]);
+
+  if (!slides.length) {
+    return <Spinner />;
+  }
 
   /**
    * Drag Handler for Manual Interaction
@@ -69,31 +60,52 @@ export const HeroSlider: React.FC = () => {
     }
   };
 
+  const currentSlide = slides[currentIndex];
+  //   custom varient
+  const variants = {
+    enter: (direction: number) => ({
+      x: direction > 0 ? 1000 : -1000,
+      opacity: 0,
+    }),
+    center: {
+      zIndex: 1,
+      x: 0,
+      opacity: 1,
+    },
+    exit: (direction: number) => ({
+      zIndex: 0,
+      x: direction < 0 ? 1000 : -1000,
+      opacity: 0,
+    }),
+  };
+  if (error || slides.length === 0) return null;
+
   if (loading)
     return (
       <div className="h-[70vh] w-full bg-brand-50 animate-pulse flex items-center justify-center">
         <Spinner />
       </div>
     );
-  if (error || slides.length === 0) return null;
-
-  const currentSlide = slides[currentIndex];
 
   return (
     <section className="relative h-[80vh] w-full overflow-hidden bg-brand-900">
-      <AnimatePresence initial={false} mode="wait">
+      <AnimatePresence initial={false} mode="popLayout">
         <motion.div
-          key={currentSlide.id}
-          initial={{ opacity: 0, x: 100 }}
-          animate={{ opacity: 1, x: 0 }}
-          exit={{ opacity: 0, x: -100 }}
-          transition={{ duration: 0.6, ease: "easeInOut" }}
+          key={page} // Using page instead of currentIndex ensures unique keys for every slide move
+          custom={direction} // THIS IS CRITICAL: it tells the variants which direction to move
+          variants={variants}
+          initial="enter"
+          animate="center"
+          exit="exit"
+          transition={{
+            x: { type: "spring", stiffness: 300, damping: 30 },
+            opacity: { duration: 0.5 },
+          }}
           drag="x"
           dragConstraints={{ left: 0, right: 0 }}
           onDragEnd={onDragEnd}
           className="absolute inset-0 cursor-grab active:cursor-grabbing"
         >
-          {/* Background Image with Overlay */}
           <div
             className="absolute inset-0 bg-cover bg-center transition-transform duration-1000 scale-105"
             style={{ backgroundImage: `url(${currentSlide.backgroundImage})` }}
@@ -101,7 +113,6 @@ export const HeroSlider: React.FC = () => {
             <div className="absolute inset-0 bg-linear-to-r from-brand-900/80 to-transparent" />
           </div>
 
-          {/* Content Container */}
           <div className="relative h-full max-w-7xl mx-auto px-6 flex flex-col justify-center items-start text-white">
             {currentSlide.offer && (
               <motion.span
@@ -148,8 +159,6 @@ export const HeroSlider: React.FC = () => {
           </div>
         </motion.div>
       </AnimatePresence>
-
-      {/* Visual Instruction (Optional hint for drag) */}
       <div className="absolute bottom-8 right-8 text-brand-200/50 text-xs uppercase tracking-widest hidden md:block">
         Swipe or Drag to explore
       </div>

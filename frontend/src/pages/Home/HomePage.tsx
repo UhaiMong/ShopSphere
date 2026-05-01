@@ -4,10 +4,10 @@ import { ShieldCheck, Truck, RotateCcw, Headphones } from "lucide-react";
 import api from "@/services/app";
 import { Product } from "@/types/typeProduct";
 import { Category } from "@/types/typeCategory";
-import { Hero } from "./Hero";
 import { CategoryGrid } from "./CategoryGrid";
 import { ProductSection } from "./ProductionSection";
 import { CTABanner } from "./CTABanner";
+import { HeroSlider } from "./HeroSlider";
 
 // Value Props
 const ValueProps = () => {
@@ -85,11 +85,9 @@ export const HomePage = () => {
       .catch(() => setIsPopularLoading(false));
   }, []);
 
-  console.log("Featured: ", featured, "Popular: ", "Categories: ", categories);
-
   return (
     <div>
-      <Hero />
+      <HeroSlider />
       <ValueProps />
       <CategoryGrid categories={categories} />
       <ProductSection

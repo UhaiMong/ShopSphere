@@ -1,4 +1,4 @@
-import mongoose, { Schema, Model, Document } from "mongoose";
+import mongoose, { Schema, Model, Document } from 'mongoose';
 
 // WISHLIST MODEL
 
@@ -12,18 +12,13 @@ const wishlistSchema = new Schema<IWishlist>(
   {
     user: {
       type: Schema.Types.ObjectId,
-      ref: "User",
+      ref: 'User',
       required: true,
       unique: true,
     },
-    products: [{ type: Schema.Types.ObjectId, ref: "Product" }],
+    products: [{ type: Schema.Types.ObjectId, ref: 'Product' }],
   },
   { timestamps: true, versionKey: false },
 );
 
-wishlistSchema.index({ user: 1 });
-
-export const Wishlist: Model<IWishlist> = mongoose.model<IWishlist>(
-  "Wishlist",
-  wishlistSchema,
-);
+export const Wishlist: Model<IWishlist> = mongoose.model<IWishlist>('Wishlist', wishlistSchema);

@@ -1,6 +1,6 @@
-import mongoose, { Schema, Model } from "mongoose";
-import bcrypt from "bcryptjs";
-import { IUser, IAddress, UserRole } from "../types";
+import mongoose, { Schema, Model } from 'mongoose';
+import bcrypt from 'bcryptjs';
+import { IUser, IAddress, UserRole } from '../types';
 
 // Address Sub-Schema
 const addressSchema = new Schema<IAddress>(
@@ -13,7 +13,7 @@ const addressSchema = new Schema<IAddress>(
     city: { type: String, required: true },
     state: String,
     postalCode: { type: String, required: true },
-    country: { type: String, required: true, default: "BD" },
+    country: { type: String, required: true, default: 'BD' },
     isDefault: { type: Boolean, default: false },
   },
   { _id: true },
@@ -24,30 +24,30 @@ const userSchema = new Schema<IUser>(
   {
     name: {
       type: String,
-      required: [true, "Name is required"],
+      required: [true, 'Name is required'],
       trim: true,
-      minlength: [2, "Name must be at least 2 characters"],
-      maxlength: [60, "Name must not exceed 60 characters"],
+      minlength: [2, 'Name must be at least 2 characters'],
+      maxlength: [60, 'Name must not exceed 60 characters'],
     },
     email: {
       type: String,
-      required: [true, "Email is required"],
+      required: [true, 'Email is required'],
       unique: true,
       lowercase: true,
       trim: true,
-      match: [/^\S+@\S+\.\S+$/, "Please provide a valid email"],
+      match: [/^\S+@\S+\.\S+$/, 'Please provide a valid email'],
       index: true,
     },
     passwordHash: {
       type: String,
-      required: [true, "Password is required"],
+      required: [true, 'Password is required'],
       minlength: 8,
       select: false,
     },
     role: {
       type: String,
-      enum: ["user", "admin", "superadmin"] satisfies UserRole[],
-      default: "user",
+      enum: ['user', 'admin', 'superadmin'] satisfies UserRole[],
+      default: 'user',
     },
     isVerified: { type: Boolean, default: false },
     isActive: { type: Boolean, default: true },
@@ -77,17 +77,15 @@ const userSchema = new Schema<IUser>(
 );
 
 // Pre-save Hook: Hash password
-userSchema.pre("save", async function (next) {
+userSchema.pre('save', async function (next) {
   // Only hash if passwordHash was modified (new user or password change)
-  if (!this.isModified("passwordHash")) return next();
+  if (!this.isModified('passwordHash')) return next();
   this.passwordHash = await bcrypt.hash(this.passwordHash, 12);
   next();
 });
 
 // Instance Method: Compare Password
-userSchema.methods.comparePassword = async function (
-  candidatePassword: string,
-): Promise<boolean> {
+userSchema.methods.comparePassword = async function (candidatePassword: string): Promise<boolean> {
   return bcrypt.compare(candidatePassword, this.passwordHash);
 };
 
@@ -103,8 +101,7 @@ userSchema.methods.toPublicJSON = function () {
 };
 
 //  Indexes
-// email index is defined inline above (unique: true creates it)
 userSchema.index({ createdAt: -1 });
 
 //  Model
-export const User: Model<IUser> = mongoose.model<IUser>("User", userSchema);
+export const User: Model<IUser> = mongoose.model<IUser>('User', userSchema);

@@ -42,7 +42,6 @@ const mediaSchema = new Schema<IMedia>({
 
 // Indexes
 mediaSchema.index({ title: 'text' });
-mediaSchema.index({ category: 1 });
 
 // Model
 export const Media: Model<IMedia> = mongoose.model<IMedia>('Media', mediaSchema);

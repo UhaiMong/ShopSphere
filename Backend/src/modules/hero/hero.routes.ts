@@ -10,6 +10,7 @@ export const heroRouter = Router();
 heroRouter.get('/', heroController.getActived);
 
 // Admin
+heroRouter.get('/all', protect, requireRole('admin', 'superadmin'), heroController.getAll);
 // Create
 heroRouter.post(
   '/',
@@ -37,4 +38,9 @@ heroRouter.patch(
 );
 
 // Permanent delete
-heroRouter.delete('/:id', protect, requireRole('admin', 'superadmin'), heroController.deleteHero);
+heroRouter.delete(
+  '/:id/permanent',
+  protect,
+  requireRole('admin', 'superadmin'),
+  heroController.deleteHero,
+);

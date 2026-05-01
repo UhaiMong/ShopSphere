@@ -13,7 +13,6 @@ import { Toggle } from "@/components/ui/Toggle";
 import { Pagination } from "@/components/ui/Pagination";
 import { ProductFormModal } from "./ProductFormModal";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
-import MediaPickerModal from "../Media/MediaPickerModal";
 
 // Products Table Page
 export const ProductsPage = () => {

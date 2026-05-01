@@ -15,6 +15,7 @@ import {
   ArrowLeftSquare,
   ArrowRightCircle,
   ArrowRightSquare,
+  GalleryThumbnails,
 } from "lucide-react";
 import {
   useAppDispatch,
@@ -29,6 +30,7 @@ import { cn } from "@/utils";
 const NAV = [
   { to: "/", icon: LayoutDashboard, label: "Dashboard" },
   { to: "/products", icon: Package, label: "Products" },
+  { to: "/hero", icon: GalleryThumbnails, label: "Banner" },
   { to: "/orders", icon: ShoppingCart, label: "Orders" },
   { to: "/users", icon: Users, label: "Users" },
   { to: "/categories", icon: Tag, label: "Categories" },

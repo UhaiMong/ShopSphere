@@ -61,7 +61,7 @@ export const LoginPage = () => {
           label="Email address"
           type="email"
           autoComplete="email"
-          placeholder="you@example.com"
+          placeholder="username@domain.com"
           leftIcon={<Mail className="w-4 h-4" />}
           error={errors.email?.message}
           {...register("email", {
@@ -129,13 +129,6 @@ export const LoginPage = () => {
         >
           Sign in
         </Button>
-
-        {/* Demo credentials */}
-        <div className="p-4 bg-amber-50 border border-amber-100 rounded-xl text-xs text-amber-700 space-y-1">
-          <p className="font-semibold">Demo credentials:</p>
-          <p>📧 user@shopsphere.com</p>
-          <p>🔑 User@123456</p>
-        </div>
       </form>
     </AuthShell>
   );

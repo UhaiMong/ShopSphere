@@ -189,6 +189,20 @@ export interface Media {
   updatedAt: string;
 }
 
+// ==============Hero==============
+
+export interface Hero {
+  _id: string;
+  id: string;
+  title: string;
+  subtitle: string;
+  offer?: string;
+  ctaText: string;
+  ctaLink: string;
+  backgroundImage: string;
+  isActive: boolean;
+}
+
 // ===========Filters===========
 export interface TableFilters {
   page?: number;
