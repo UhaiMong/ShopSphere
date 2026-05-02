@@ -1,33 +1,27 @@
-import crypto from "crypto";
-import { User } from "../../models/User.model";
-import { ApiError } from "../../utils/ApiError";
-import { IUserPayload } from "../../types";
-import {
-  generateTokenPair,
-  verifyRefreshToken,
-  TokenPair,
-} from "./jwt.service";
+import crypto from 'crypto';
+import { User } from '../../models/User.model';
+import { ApiError } from '../../utils/ApiError';
+import { IUserPayload } from '../../types';
+import { generateTokenPair, verifyRefreshToken, TokenPair } from './jwt.service';
 import {
   sendVerificationEmail,
   sendPasswordResetEmail,
   sendPasswordChangedEmail,
   sendWelcomeEmail,
-} from "./email.service";
+} from './email.service';
 import {
   RegisterInput,
   LoginInput,
   ForgotPasswordInput,
   ResetPasswordInput,
   ChangePasswordInput,
-} from "./auth.validator";
+} from './auth.validator';
 
 // Helpers: generate random crypto token
-const generateToken = (bytes = 32): string =>
-  crypto.randomBytes(bytes).toString("hex");
+const generateToken = (bytes = 32): string => crypto.randomBytes(bytes).toString('hex');
 
 // Generates a 6-digit numeric OTP
-const generateOTP = (): string =>
-  Math.floor(100000 + Math.random() * 900000).toString();
+const generateOTP = (): string => Math.floor(100000 + Math.random() * 900000).toString();
 
 // Builds the JWT payload from a user document
 const buildPayload = (user: {
@@ -38,7 +32,7 @@ const buildPayload = (user: {
 }): IUserPayload => ({
   _id: String(user._id),
   email: user.email,
-  role: user.role as IUserPayload["role"],
+  role: user.role as IUserPayload['role'],
   isVerified: user.isVerified,
 });
 
@@ -51,7 +45,7 @@ export const authService = {
     // Check duplicate email
     const existing = await User.findOne({ email });
     if (existing) {
-      throw ApiError.conflict("An account with this email already exists");
+      throw ApiError.conflict('An account with this email already exists');
     }
 
     // Generate email verification token
@@ -69,8 +63,7 @@ export const authService = {
     await sendVerificationEmail(email, name, emailVerificationToken);
 
     return {
-      message:
-        "Registration successful. Please check your email to verify your account.",
+      message: 'Registration successful. Please check your email to verify your account.',
     };
   },
 
@@ -83,17 +76,20 @@ export const authService = {
 
     // Explicitly select passwordHash and refreshTokens (both select:false)
     const user = await User.findOne({ email, isActive: true }).select(
-      "+passwordHash +refreshTokens",
+      '+passwordHash +refreshTokens',
     );
 
     if (!user) {
       // Use generic message to prevent user enumeration
-      throw ApiError.unauthorized("Invalid email or password");
+      throw ApiError.unauthorized('Invalid email or password');
+    }
+    if (!user.isVerified) {
+      throw ApiError.unauthorized('Email verification failed or verification is expired');
     }
 
     const isMatch = await user.comparePassword(password);
     if (!isMatch) {
-      throw ApiError.unauthorized("Invalid email or password");
+      throw ApiError.unauthorized('Invalid email or password');
     }
 
     // Update last login timestamp
@@ -104,10 +100,7 @@ export const authService = {
     const tokens = generateTokenPair(payload);
 
     // Store refresh token (support multiple devices, max 5)
-    user.refreshTokens = [
-      ...(user.refreshTokens ?? []).slice(-4),
-      tokens.refreshToken,
-    ];
+    user.refreshTokens = [...(user.refreshTokens ?? []).slice(-4), tokens.refreshToken];
     await user.save({ validateBeforeSave: false });
 
     return { user: payload, tokens };
@@ -120,20 +113,18 @@ export const authService = {
     try {
       decoded = verifyRefreshToken(incomingRefreshToken);
     } catch {
-      throw ApiError.unauthorized("Invalid or expired refresh token");
+      throw ApiError.unauthorized('Invalid or expired refresh token');
     }
 
     // Find user and check token is in their list (rotation check)
-    const user = await User.findById(decoded._id).select("+refreshTokens");
+    const user = await User.findById(decoded._id).select('+refreshTokens');
     if (!user || !user.refreshTokens?.includes(incomingRefreshToken)) {
       // Token reuse detected — invalidate ALL tokens for this user (security)
       if (user) {
         user.refreshTokens = [];
         await user.save({ validateBeforeSave: false });
       }
-      throw ApiError.unauthorized(
-        "Refresh token reuse detected. Please log in again.",
-      );
+      throw ApiError.unauthorized('Refresh token reuse detected. Please log in again.');
     }
 
     // Rotate: remove old token, add new one
@@ -166,10 +157,10 @@ export const authService = {
   async verifyEmail(token: string): Promise<{ message: string }> {
     const user = await User.findOne({
       emailVerificationToken: token,
-    }).select("+emailVerificationToken");
+    }).select('+emailVerificationToken');
 
     if (!user) {
-      throw ApiError.badRequest("Invalid or expired verification link");
+      throw ApiError.badRequest('Invalid or expired verification link');
     }
 
     user.isVerified = true;
@@ -179,24 +170,21 @@ export const authService = {
     // Send welcome email after verification
     await sendWelcomeEmail(user.email, user.name);
 
-    return { message: "Email verified successfully. You can now log in." };
+    return { message: 'Email verified successfully. You can now log in.' };
   },
 
   //  forgotPassword
-  async forgotPassword(
-    input: ForgotPasswordInput,
-  ): Promise<{ message: string }> {
+  async forgotPassword(input: ForgotPasswordInput): Promise<{ message: string }> {
     const { email } = input;
     const user = await User.findOne({ email, isActive: true });
 
     // Always return the same message to prevent user enumeration
-    const genericMessage =
-      "If an account exists with this email, you will receive an OTP shortly.";
+    const genericMessage = 'If an account exists with this email, you will receive an OTP shortly.';
 
     if (!user) return { message: genericMessage };
 
     const otp = generateOTP();
-    const otpHash = crypto.createHash("sha256").update(otp).digest("hex");
+    const otpHash = crypto.createHash('sha256').update(otp).digest('hex');
 
     user.passwordResetToken = otpHash;
     user.passwordResetExpires = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
@@ -211,16 +199,16 @@ export const authService = {
   async resetPassword(input: ResetPasswordInput): Promise<{ message: string }> {
     const { email, otp, newPassword } = input;
 
-    const otpHash = crypto.createHash("sha256").update(otp).digest("hex");
+    const otpHash = crypto.createHash('sha256').update(otp).digest('hex');
 
     const user = await User.findOne({
       email,
       passwordResetToken: otpHash,
       passwordResetExpires: { $gt: new Date() },
-    }).select("+passwordResetToken +passwordResetExpires +refreshTokens");
+    }).select('+passwordResetToken +passwordResetExpires +refreshTokens');
 
     if (!user) {
-      throw ApiError.badRequest("Invalid or expired OTP");
+      throw ApiError.badRequest('Invalid or expired OTP');
     }
 
     // Set new password (pre-save hook will hash it)
@@ -234,27 +222,21 @@ export const authService = {
     await sendPasswordChangedEmail(user.email, user.name);
 
     return {
-      message:
-        "Password reset successfully. Please log in with your new password.",
+      message: 'Password reset successfully. Please log in with your new password.',
     };
   },
 
   // changePassword
 
-  async changePassword(
-    userId: string,
-    input: ChangePasswordInput,
-  ): Promise<{ message: string }> {
+  async changePassword(userId: string, input: ChangePasswordInput): Promise<{ message: string }> {
     const { currentPassword, newPassword } = input;
 
-    const user = await User.findById(userId).select(
-      "+passwordHash +refreshTokens",
-    );
-    if (!user) throw ApiError.notFound("User");
+    const user = await User.findById(userId).select('+passwordHash +refreshTokens');
+    if (!user) throw ApiError.notFound('User');
 
     const isMatch = await user.comparePassword(currentPassword);
     if (!isMatch) {
-      throw ApiError.badRequest("Current password is incorrect");
+      throw ApiError.badRequest('Current password is incorrect');
     }
 
     user.passwordHash = newPassword;
@@ -264,22 +246,22 @@ export const authService = {
 
     await sendPasswordChangedEmail(user.email, user.name);
 
-    return { message: "Password changed successfully. Please log in again." };
+    return { message: 'Password changed successfully. Please log in again.' };
   },
 
   // getMe
   async getMe(userId: string) {
-    const user = await User.findById(userId).select("-__v");
-    if (!user) throw ApiError.notFound("User");
+    const user = await User.findById(userId).select('-__v');
+    if (!user) throw ApiError.notFound('User');
     return user.toPublicJSON();
   },
 
   //  resendVerification
   async resendVerificationEmail(userId: string): Promise<{ message: string }> {
-    const user = await User.findById(userId).select("+emailVerificationToken");
-    if (!user) throw ApiError.notFound("User");
+    const user = await User.findById(userId).select('+emailVerificationToken');
+    if (!user) throw ApiError.notFound('User');
     if (user.isVerified) {
-      throw ApiError.badRequest("Email is already verified");
+      throw ApiError.badRequest('Email is already verified');
     }
 
     const emailVerificationToken = generateToken();
@@ -288,6 +270,6 @@ export const authService = {
 
     await sendVerificationEmail(user.email, user.name, emailVerificationToken);
 
-    return { message: "Verification email sent. Please check your inbox." };
+    return { message: 'Verification email sent. Please check your inbox.' };
   },
 };

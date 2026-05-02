@@ -34,6 +34,12 @@ const OrderDetailPage = lazy(() =>
     default: m.OrderDetailPage,
   })),
 );
+
+const VerifyEmailPage = lazy(() =>
+  import("../pages/Auth/VerifyEmail").then((m) => ({
+    default: m.VerifyEmail,
+  })),
+);
 const ProfilePage = lazy(() =>
   import("../pages/Profile/ProfilePage").then((m) => ({
     default: m.ProfilePage,
@@ -66,6 +72,7 @@ const router = createBrowserRouter([
     children: [
       { index: true, element: <HomePage /> },
       { path: "products", element: <ProductListPage /> },
+      { path: "/verify-email/:token", element: <VerifyEmailPage /> },
       { path: "products/:slug", element: <ProductDetailPage /> },
       { path: "cart", element: <CartPage /> },
       { path: "wishlist", element: <WishlistPage /> },

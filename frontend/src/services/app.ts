@@ -5,7 +5,7 @@ const BASE_URL = import.meta.env.VITE_API_URL ?? "/api/v1";
 // Axios Instance
 export const api = axios.create({
   baseURL: BASE_URL,
-  withCredentials: true, // Send httpOnly refresh cookie automatically
+  withCredentials: true,
   headers: { "Content-Type": "application/json" },
   timeout: 15_000,
 });

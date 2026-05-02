@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { Zap } from "lucide-react";
+const LOGO = import.meta.env.VITE_LOGO;
 
 // Shared Auth Shell
 export const AuthShell = ({
@@ -23,15 +23,9 @@ export const AuthShell = ({
 
       <div className="relative z-10 max-w-sm">
         <Link to="/" className="flex items-center gap-2.5 mb-16">
-          <div className="w-10 h-10 bg-brand-500 rounded-xl flex items-center justify-center">
-            <Zap className="w-5 h-5 text-white" fill="currentColor" />
+          <div className="w-52 h-auto rounded-lg flex items-center justify-center">
+            <img src={LOGO} className="w-full h-full object-cover" alt="Logo" />
           </div>
-          <span
-            style={{ fontFamily: "Syne, sans-serif" }}
-            className="text-2xl font-bold text-white"
-          >
-            Shop<span className="text-brand-400">Sphere</span>
-          </span>
         </Link>
 
         <blockquote className="space-y-6">
@@ -78,15 +72,9 @@ export const AuthShell = ({
       <div className="w-full max-w-md">
         {/* Mobile logo */}
         <Link to="/" className="flex items-center gap-2 mb-10 lg:hidden">
-          <div className="w-8 h-8 bg-brand-500 rounded-lg flex items-center justify-center">
-            <Zap className="w-4 h-4 text-white" fill="currentColor" />
+          <div className="w-52 h-auto rounded-lg flex items-center justify-center">
+            <img src={LOGO} className="w-full h-full object-cover" />
           </div>
-          <span
-            style={{ fontFamily: "Syne, sans-serif" }}
-            className="text-xl font-bold text-stone-900"
-          >
-            Shop<span className="text-brand-500">Sphere</span>
-          </span>
         </Link>
 
         <div className="mb-8">

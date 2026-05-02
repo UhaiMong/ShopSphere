@@ -63,6 +63,7 @@ const userSchema = new Schema<IUser>(
     passwordResetExpires: { type: Date, select: false },
 
     // Email verification
+    emailVerificationExpires: Date,
     emailVerificationToken: { type: String, select: false },
 
     lastLogin: Date,

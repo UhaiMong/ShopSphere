@@ -1,15 +1,15 @@
-import { Router } from "express";
-import rateLimit from "express-rate-limit";
-import { authController } from "./auth.controller";
-import { protect } from "../../middleware/auth.middleware";
-import { validate } from "../../middleware/validate.middleware";
+import { Router } from 'express';
+import rateLimit from 'express-rate-limit';
+import { authController } from './auth.controller';
+import { protect } from '../../middleware/auth.middleware';
+import { validate } from '../../middleware/validate.middleware';
 import {
   registerSchema,
   loginSchema,
   forgotPasswordSchema,
   resetPasswordSchema,
   changePasswordSchema,
-} from "./auth.validator";
+} from './auth.validator';
 
 const router = Router();
 
@@ -20,7 +20,7 @@ const loginLimiter = rateLimit({
   max: 5,
   message: {
     success: false,
-    message: "Too many login attempts. Please try again in 15 minutes.",
+    message: 'Too many login attempts. Please try again in 15 minutes.',
   },
   standardHeaders: true,
   legacyHeaders: false,
@@ -32,45 +32,37 @@ const forgotPasswordLimiter = rateLimit({
   max: 3,
   message: {
     success: false,
-    message: "Too many password reset requests. Please try again in 1 hour.",
+    message: 'Too many password reset requests. Please try again in 1 hour.',
   },
   standardHeaders: true,
   legacyHeaders: false,
 });
 
-// Public Routes
-router.post("/register", validate(registerSchema), authController.register);
+// Public Routes : register
+router.post('/register', validate(registerSchema), authController.register);
+// Login
+router.post('/login', loginLimiter, validate(loginSchema), authController.login);
+// Refresh
+router.post('/refresh', authController.refresh);
+// Verify email
+router.get('/verify-email/:token', authController.verifyEmail);
+// Forgot password
 router.post(
-  "/login",
-  loginLimiter,
-  validate(loginSchema),
-  authController.login,
-);
-router.post("/refresh", authController.refresh);
-router.get("/verify-email/:token", authController.verifyEmail);
-router.post(
-  "/forgot-password",
+  '/forgot-password',
   forgotPasswordLimiter,
   validate(forgotPasswordSchema),
   authController.forgotPassword,
 );
-router.post(
-  "/reset-password",
-  validate(resetPasswordSchema),
-  authController.resetPassword,
-);
+// Reset password
+router.post('/reset-password', validate(resetPasswordSchema), authController.resetPassword);
 
 // Protected Routes
 router.use(protect);
 
-router.get("/me", authController.getMe);
-router.post("/logout", authController.logout);
-router.post("/logout-all", authController.logoutAll);
-router.patch(
-  "/change-password",
-  validate(changePasswordSchema),
-  authController.changePassword,
-);
-router.post("/resend-verification", authController.resendVerification);
+router.get('/me', authController.getMe);
+router.post('/logout', authController.logout);
+router.post('/logout-all', authController.logoutAll);
+router.patch('/change-password', validate(changePasswordSchema), authController.changePassword);
+router.post('/resend-verification', authController.resendVerification);
 
 export default router;

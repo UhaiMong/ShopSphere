@@ -1,16 +1,16 @@
-import { Request, Response } from "express";
-import { authService } from "./auth.service";
-import { ApiResponse } from "../../utils/ApiResponse";
-import { ApiError } from "../../utils/ApiError";
-import { catchAsync } from "../../utils/catchAsync";
-import { REFRESH_COOKIE_OPTIONS } from "./jwt.service";
+import { Request, Response } from 'express';
+import { authService } from './auth.service';
+import { ApiResponse } from '../../utils/ApiResponse';
+import { ApiError } from '../../utils/ApiError';
+import { catchAsync } from '../../utils/catchAsync';
+import { REFRESH_COOKIE_OPTIONS } from './jwt.service';
 import {
   RegisterInput,
   LoginInput,
   ForgotPasswordInput,
   ResetPasswordInput,
   ChangePasswordInput,
-} from "./auth.validator";
+} from './auth.validator';
 
 // Auth Controller
 
@@ -24,9 +24,11 @@ export const authController = {
   // POST /auth/login
   login: catchAsync(async (req: Request, res: Response) => {
     const { user, tokens } = await authService.login(req.body as LoginInput);
-
+    if (!user.isVerified) {
+      throw ApiError.forbidden('Your email verification is required');
+    }
     // Refresh token → httpOnly cookie
-    res.cookie("refreshToken", tokens.refreshToken, REFRESH_COOKIE_OPTIONS);
+    res.cookie('refreshToken', tokens.refreshToken, REFRESH_COOKIE_OPTIONS);
 
     ApiResponse.success(res, {
       user,
@@ -39,13 +41,13 @@ export const authController = {
     const incomingToken = req.cookies?.refreshToken as string | undefined;
 
     if (!incomingToken) {
-      throw ApiError.unauthorized("No refresh token provided");
+      throw ApiError.unauthorized('No refresh token provided');
     }
 
     const tokens = await authService.refreshTokens(incomingToken);
 
     // Rotate refresh cookie
-    res.cookie("refreshToken", tokens.refreshToken, REFRESH_COOKIE_OPTIONS);
+    res.cookie('refreshToken', tokens.refreshToken, REFRESH_COOKIE_OPTIONS);
 
     ApiResponse.success(res, { accessToken: tokens.accessToken });
   }),
@@ -59,21 +61,21 @@ export const authController = {
     }
 
     // Clear the cookie regardless
-    res.clearCookie("refreshToken", {
+    res.clearCookie('refreshToken', {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "strict",
-      path: "/api/v1/auth",
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
+      path: '/api/v1/auth',
     });
 
-    ApiResponse.success(res, null, "Logged out successfully");
+    ApiResponse.success(res, null, 'Logged out successfully');
   }),
 
   // POST /auth/logout-all
   logoutAll: catchAsync(async (req: Request, res: Response) => {
     await authService.logoutAll(req.user!._id);
-    res.clearCookie("refreshToken", { path: "/api/v1/auth" });
-    ApiResponse.success(res, null, "Logged out from all devices");
+    res.clearCookie('refreshToken', { path: '/api/v1/auth' });
+    ApiResponse.success(res, null, 'Logged out from all devices');
   }),
 
   // GET /auth/verify-email/:token
@@ -84,28 +86,21 @@ export const authController = {
 
   // POST /auth/forgot-password
   forgotPassword: catchAsync(async (req: Request, res: Response) => {
-    const result = await authService.forgotPassword(
-      req.body as ForgotPasswordInput,
-    );
+    const result = await authService.forgotPassword(req.body as ForgotPasswordInput);
     ApiResponse.success(res, null, result.message);
   }),
 
   // POST /auth/reset-password
   resetPassword: catchAsync(async (req: Request, res: Response) => {
-    const result = await authService.resetPassword(
-      req.body as ResetPasswordInput,
-    );
+    const result = await authService.resetPassword(req.body as ResetPasswordInput);
     ApiResponse.success(res, null, result.message);
   }),
 
   // PATCH /auth/change-password  (protected)
   changePassword: catchAsync(async (req: Request, res: Response) => {
-    const result = await authService.changePassword(
-      req.user!._id,
-      req.body as ChangePasswordInput,
-    );
+    const result = await authService.changePassword(req.user!._id, req.body as ChangePasswordInput);
     // Clear cookie — user must re-login
-    res.clearCookie("refreshToken", { path: "/api/v1/auth" });
+    res.clearCookie('refreshToken', { path: '/api/v1/auth' });
     ApiResponse.success(res, null, result.message);
   }),
 

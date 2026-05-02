@@ -91,7 +91,11 @@ export const Navbar = () => {
             {/* Logo */}
             <Link to="/" className="flex items-center gap-2 shrink-0 group">
               <div className="w-52 h-auto rounded-lg flex items-center justify-center">
-                <img src={LOGO} className="w-full h-full object-cover" />
+                <img
+                  src={LOGO}
+                  className="w-full h-full object-cover"
+                  alt="Logo"
+                />
               </div>
             </Link>
 

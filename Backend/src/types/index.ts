@@ -1,5 +1,5 @@
-import { Document, Types } from "mongoose";
-import mongoose from "mongoose";
+import { Document, Types } from 'mongoose';
+import mongoose from 'mongoose';
 
 // Augment Express Request
 declare global {
@@ -20,20 +20,20 @@ export interface IUserPayload {
 }
 
 // Enums
-export type UserRole = "user" | "admin" | "superadmin";
+export type UserRole = 'user' | 'admin' | 'superadmin';
 
 export type OrderStatus =
-  | "pending"
-  | "confirmed"
-  | "processing"
-  | "shipped"
-  | "delivered"
-  | "cancelled"
-  | "refunded";
+  | 'pending'
+  | 'confirmed'
+  | 'processing'
+  | 'shipped'
+  | 'delivered'
+  | 'cancelled'
+  | 'refunded';
 
-export type PaymentStatus = "pending" | "paid" | "failed" | "refunded";
+export type PaymentStatus = 'pending' | 'paid' | 'failed' | 'refunded';
 
-export type PaymentMethod = "stripe" | "sslcommerz" | "paypal" | "cod";
+export type PaymentMethod = 'stripe' | 'sslcommerz' | 'paypal' | 'cod';
 
 // Address Sub-document
 export interface IAddress {
@@ -62,6 +62,7 @@ export interface IUser extends Document {
   passwordResetToken?: string;
   passwordResetExpires?: Date;
   emailVerificationToken?: string;
+  emailVerificationExpires?: Date;
   lastLogin?: Date;
   isActive: boolean;
   createdAt: Date;
