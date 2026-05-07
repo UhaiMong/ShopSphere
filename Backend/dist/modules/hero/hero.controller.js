@@ -6,12 +6,12 @@ const catchAsync_1 = require("../../utils/catchAsync");
 const hero_service_1 = require("./hero.service");
 exports.heroController = {
     // GET /hero/active
-    getActived: (0, catchAsync_1.catchAsync)(async (req, res) => {
+    getActived: (0, catchAsync_1.catchAsync)(async (_req, res) => {
         const heroes = await hero_service_1.heroService.getActivedSlides();
         ApiResponse_1.ApiResponse.success(res, heroes);
     }),
     // GET /hero/all (admin)
-    getAll: (0, catchAsync_1.catchAsync)(async (req, res) => {
+    getAll: (0, catchAsync_1.catchAsync)(async (_req, res) => {
         const heroes = await hero_service_1.heroService.getAllSlides();
         ApiResponse_1.ApiResponse.success(res, heroes);
     }),

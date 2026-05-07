@@ -5,13 +5,13 @@ import { heroService } from './hero.service';
 
 export const heroController = {
   // GET /hero/active
-  getActived: catchAsync(async (req: Request, res: Response) => {
+  getActived: catchAsync(async (_req: Request, res: Response) => {
     const heroes = await heroService.getActivedSlides();
     ApiResponse.success(res, heroes);
   }),
 
   // GET /hero/all (admin)
-  getAll: catchAsync(async (req: Request, res: Response) => {
+  getAll: catchAsync(async (_req: Request, res: Response) => {
     const heroes = await heroService.getAllSlides();
     ApiResponse.success(res, heroes);
   }),
