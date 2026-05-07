@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-const LOGO = import.meta.env.VITE_LOGO;
+import LOGO from "../../assets/logo_horizontal_200.png";
 
 // Shared Auth Shell
 export const AuthShell = ({
