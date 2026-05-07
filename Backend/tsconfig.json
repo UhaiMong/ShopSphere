@@ -18,9 +18,8 @@
     "noUnusedParameters": true,
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true,
-    // "moduleResolution": "node",
     "paths": {
-      "@app/*": ["./src/app/*"]
+      "@/*": ["./src/*"]
     }
   },
   "include": ["src/**/*"],
