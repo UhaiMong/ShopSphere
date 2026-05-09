@@ -2,7 +2,8 @@ import { Link } from "react-router-dom";
 import { Mail, Phone, MapPin } from "lucide-react";
 import { FaFacebook, FaInstagram, FaTwitter } from "react-icons/fa";
 import { BGSquareBox } from "../ui/BGSquareBox";
-const LOGO = import.meta.env.VITE_LOGO;
+import LOGO from "../../assets/logo_horizontal_200.png";
+import GATEWAY from "../../assets/ssl_commerze_gatway.png";
 
 const LINKS = {
   Shop: [
@@ -109,7 +110,7 @@ export const Footer = () => (
       <h1 className="text-3xl my-4 font-semibold">Pay with:</h1>
       <img
         className="max-w-3xl h-auto object-cover"
-        src="ssl_commerze_gatway.png"
+        src={GATEWAY}
         alt="payment"
       />
     </div>

@@ -27,7 +27,7 @@ import {
 import toast from "react-hot-toast";
 import { cn } from "@/utils/cn";
 import { Button } from "../ui/Button";
-const LOGO = import.meta.env.VITE_LOGO;
+import LOGO from "../../assets/logo_horizontal_200.png";
 
 const NAV_LINKS = [
   { to: "/products", label: "Shop" },
