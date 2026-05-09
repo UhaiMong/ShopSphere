@@ -1,4 +1,4 @@
-import { HeroSlide } from '@/models/Hero.model';
+import { HeroSlide } from '../../models/Hero.model';
 import { CreateHeroInput, UpdateHeroInput } from './hero.validator';
 export declare const heroService: {
     getActivedSlides(): Promise<HeroSlide[]>;

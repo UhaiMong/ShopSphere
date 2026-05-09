@@ -12,7 +12,7 @@ const auth_middleware_1 = require("../../middleware/auth.middleware");
 const validate_middleware_1 = require("../../middleware/validate.middleware");
 const ApiResponse_2 = require("../../utils/ApiResponse");
 const zod_1 = require("zod");
-const Review_model_1 = require("@/models/Review.model");
+const Review_model_1 = require("../../models/Review.model");
 // REVIEWS
 const createReviewSchema = zod_1.z.object({
     rating: zod_1.z.number().int().min(1).max(5),
@@ -23,10 +23,10 @@ const reviewController = {
     // GET /reviews/:productId
     getProductReviews: (0, catchAsync_1.catchAsync)(async (req, res) => {
         const { page, limit, skip } = (0, ApiResponse_2.parsePagination)(req.query);
-        const sort = req.query.sort === "helpful" ? { helpfulCount: -1 } : { createdAt: -1 };
+        const sort = req.query.sort === 'helpful' ? { helpfulCount: -1 } : { createdAt: -1 };
         const [reviews, total] = await Promise.all([
             Review_model_1.Review.find({ product: req.params.productId, isApproved: true })
-                .populate("user", "name avatar")
+                .populate('user', 'name avatar')
                 .sort(sort)
                 .skip(skip)
                 .limit(limit)
@@ -44,19 +44,19 @@ const reviewController = {
         // Verify product exists
         const product = await Product_model_1.Product.findById(productId);
         if (!product)
-            throw ApiError_1.ApiError.notFound("Product");
+            throw ApiError_1.ApiError.notFound('Product');
         // Check if already reviewed
         const existing = await Review_model_1.Review.findOne({
             user: req.user._id,
             product: productId,
         });
         if (existing)
-            throw ApiError_1.ApiError.conflict("You have already reviewed this product");
+            throw ApiError_1.ApiError.conflict('You have already reviewed this product');
         // Check if verified purchase
         const hasPurchased = await Order_model_1.Order.exists({
             user: req.user._id,
-            "items.product": productId,
-            status: "delivered",
+            'items.product': productId,
+            status: 'delivered',
         });
         const review = await Review_model_1.Review.create({
             user: req.user._id,
@@ -64,14 +64,14 @@ const reviewController = {
             isVerifiedPurchase: Boolean(hasPurchased),
             ...req.body,
         });
-        await review.populate("user", "name avatar");
-        ApiResponse_1.ApiResponse.created(res, review, "Review submitted successfully");
+        await review.populate('user', 'name avatar');
+        ApiResponse_1.ApiResponse.created(res, review, 'Review submitted successfully');
     }),
     // PATCH /reviews/:id/helpful  (protected) — toggle vote
     toggleHelpful: (0, catchAsync_1.catchAsync)(async (req, res) => {
         const review = await Review_model_1.Review.findById(req.params.id);
         if (!review)
-            throw ApiError_1.ApiError.notFound("Review");
+            throw ApiError_1.ApiError.notFound('Review');
         const userId = req.user._id;
         const hasVoted = review.helpfulVoters.some((v) => String(v) === userId);
         if (hasVoted) {
@@ -92,18 +92,18 @@ const reviewController = {
     remove: (0, catchAsync_1.catchAsync)(async (req, res) => {
         const review = await Review_model_1.Review.findById(req.params.id);
         if (!review)
-            throw ApiError_1.ApiError.notFound("Review");
+            throw ApiError_1.ApiError.notFound('Review');
         const isOwner = String(review.user) === req.user._id;
-        const isAdmin = ["admin", "superadmin"].includes(req.user.role);
+        const isAdmin = ['admin', 'superadmin'].includes(req.user.role);
         if (!isOwner && !isAdmin)
             throw ApiError_1.ApiError.forbidden();
         await review.deleteOne();
-        ApiResponse_1.ApiResponse.success(res, null, "Review deleted");
+        ApiResponse_1.ApiResponse.success(res, null, 'Review deleted');
     }),
 };
 exports.reviewRouter = (0, express_1.Router)();
-exports.reviewRouter.get("/:productId", reviewController.getProductReviews);
-exports.reviewRouter.post("/:productId", auth_middleware_1.protect, (0, validate_middleware_1.validate)(createReviewSchema), reviewController.create);
-exports.reviewRouter.patch("/:id/helpful", auth_middleware_1.protect, reviewController.toggleHelpful);
-exports.reviewRouter.delete("/:id", auth_middleware_1.protect, reviewController.remove);
+exports.reviewRouter.get('/:productId', reviewController.getProductReviews);
+exports.reviewRouter.post('/:productId', auth_middleware_1.protect, (0, validate_middleware_1.validate)(createReviewSchema), reviewController.create);
+exports.reviewRouter.patch('/:id/helpful', auth_middleware_1.protect, reviewController.toggleHelpful);
+exports.reviewRouter.delete('/:id', auth_middleware_1.protect, reviewController.remove);
 //# sourceMappingURL=review.controller.js.map

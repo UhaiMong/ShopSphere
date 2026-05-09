@@ -1,6 +1,6 @@
-import mongoose from "mongoose";
-import { OrderStatus } from "../../types";
-import { z } from "zod";
+import mongoose from 'mongoose';
+import { OrderStatus } from '../../types';
+import { z } from 'zod';
 declare const createOrderSchema: z.ZodObject<{
     shippingAddress: z.ZodObject<{
         fullName: z.ZodString;

@@ -4,7 +4,7 @@ import { ApiError } from '../../utils/ApiError';
 import { getPaginationMeta, PaginationMeta } from '../../utils/ApiResponse';
 import { cloudinary } from '../../config/cloudinary';
 import { CreateMediaInput, MediaQuery, UpdateMediaInput } from './media.validator';
-import { IMedia, Media } from '@/models/Media.model';
+import { IMedia, Media } from '../../models/Media.model';
 
 export const mediaService = {
   // Get All media

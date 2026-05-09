@@ -1,6 +1,6 @@
-import { env } from "@/config/env.config";
-import { logger } from "@/utils/logger";
-import nodemailer, { Transporter } from "nodemailer";
+import { env } from '../../config/env.config';
+import { logger } from '../../utils/logger';
+import nodemailer, { Transporter } from 'nodemailer';
 
 // Transporter
 let transporter: Transporter;
@@ -64,7 +64,7 @@ interface MailOptions {
 }
 
 const sendMail = async (options: MailOptions): Promise<void> => {
-  if (env.NODE_ENV === "test") return; // Skip during tests
+  if (env.NODE_ENV === 'test') return; // Skip during tests
 
   try {
     await getTransporter().sendMail({
@@ -89,7 +89,7 @@ export const sendVerificationEmail = async (
 
   await sendMail({
     to,
-    subject: "Verify your ShopSphere account",
+    subject: 'Verify your ShopSphere account',
     html: baseTemplate(`
       <h2>Welcome to ShopSphere, ${name}! 👋</h2>
       <p>Thanks for signing up. Please verify your email address to complete your registration.</p>
@@ -109,7 +109,7 @@ export const sendPasswordResetEmail = async (
 ): Promise<void> => {
   await sendMail({
     to,
-    subject: "Reset your ShopSphere password",
+    subject: 'Reset your ShopSphere password',
     html: baseTemplate(`
       <h2>Password Reset Request</h2>
       <p>Hi ${name}, we received a request to reset your password. Use the OTP below:</p>
@@ -119,13 +119,10 @@ export const sendPasswordResetEmail = async (
   });
 };
 
-export const sendPasswordChangedEmail = async (
-  to: string,
-  name: string,
-): Promise<void> => {
+export const sendPasswordChangedEmail = async (to: string, name: string): Promise<void> => {
   await sendMail({
     to,
-    subject: "Your ShopSphere password was changed",
+    subject: 'Your ShopSphere password was changed',
     html: baseTemplate(`
       <h2>Password Changed Successfully</h2>
       <p>Hi ${name}, your password has been updated successfully.</p>
@@ -134,13 +131,10 @@ export const sendPasswordChangedEmail = async (
   });
 };
 
-export const sendWelcomeEmail = async (
-  to: string,
-  name: string,
-): Promise<void> => {
+export const sendWelcomeEmail = async (to: string, name: string): Promise<void> => {
   await sendMail({
     to,
-    subject: "Welcome to ShopSphere! 🛍️",
+    subject: 'Welcome to ShopSphere! 🛍️',
     html: baseTemplate(`
       <h2>You're all set, ${name}!</h2>
       <p>Your email has been verified. Start exploring our collection.</p>

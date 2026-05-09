@@ -9,10 +9,10 @@ const catchAsync_1 = require("../../utils/catchAsync");
 const auth_middleware_1 = require("../../middleware/auth.middleware");
 const validate_middleware_1 = require("../../middleware/validate.middleware");
 const zod_1 = require("zod");
-const Cart_model_1 = require("@/models/Cart.model");
+const Cart_model_1 = require("../../models/Cart.model");
 // Validators
 const addItemSchema = zod_1.z.object({
-    productId: zod_1.z.string().regex(/^[0-9a-fA-F]{24}$/, "Invalid product ID"),
+    productId: zod_1.z.string().regex(/^[0-9a-fA-F]{24}$/, 'Invalid product ID'),
     quantity: zod_1.z.number().int().min(1).max(100).default(1),
     variantId: zod_1.z.string().optional(),
 });
@@ -23,8 +23,8 @@ const updateItemSchema = zod_1.z.object({
 const cartService = {
     async getCart(userId) {
         const cart = await Cart_model_1.Cart.findOne({ user: userId }).populate({
-            path: "items.product",
-            select: "name images thumbnail price stock isActive slug variants",
+            path: 'items.product',
+            select: 'name images thumbnail price stock isActive slug variants',
         });
         if (!cart)
             return { items: [], subtotal: 0, itemCount: 0 };
@@ -43,12 +43,12 @@ const cartService = {
         // Validate product exists and has stock
         const product = await Product_model_1.Product.findOne({ _id: productId, isActive: true });
         if (!product)
-            throw ApiError_1.ApiError.notFound("Product");
+            throw ApiError_1.ApiError.notFound('Product');
         // Check stock (variant-level if applicable)
         if (variantId) {
             const variant = product.variants.find((v) => String(v._id) === variantId);
             if (!variant)
-                throw ApiError_1.ApiError.notFound("Product variant");
+                throw ApiError_1.ApiError.notFound('Product variant');
             if (variant.stock < quantity) {
                 throw ApiError_1.ApiError.badRequest(`Only ${variant.stock} item(s) available for this variant`);
             }
@@ -64,13 +64,11 @@ const cartService = {
             cart = new Cart_model_1.Cart({ user: userId, items: [] });
         }
         // Check if item already in cart
-        const existingIdx = cart.items.findIndex((i) => String(i.product) === productId &&
-            (i.variantId ?? "") === (variantId ?? ""));
+        const existingIdx = cart.items.findIndex((i) => String(i.product) === productId && (i.variantId ?? '') === (variantId ?? ''));
         if (existingIdx >= 0) {
             const newQty = cart.items[existingIdx].quantity + quantity;
             const maxStock = variantId
-                ? (product.variants.find((v) => String(v._id) === variantId)?.stock ??
-                    0)
+                ? (product.variants.find((v) => String(v._id) === variantId)?.stock ?? 0)
                 : product.stock;
             if (newQty > maxStock) {
                 throw ApiError_1.ApiError.badRequest(`Cannot add more than ${maxStock} of this item`);
@@ -91,17 +89,16 @@ const cartService = {
     async updateItem(userId, itemId, quantity) {
         const cart = await Cart_model_1.Cart.findOne({ user: userId });
         if (!cart)
-            throw ApiError_1.ApiError.notFound("Cart");
+            throw ApiError_1.ApiError.notFound('Cart');
         const item = cart.items.find((i) => String(i._id) === itemId);
         if (!item)
-            throw ApiError_1.ApiError.notFound("Cart item");
+            throw ApiError_1.ApiError.notFound('Cart item');
         // Validate stock
         const product = await Product_model_1.Product.findById(item.product);
         if (!product)
-            throw ApiError_1.ApiError.notFound("Product");
+            throw ApiError_1.ApiError.notFound('Product');
         const maxStock = item.variantId
-            ? (product.variants.find((v) => String(v._id) === item.variantId)
-                ?.stock ?? 0)
+            ? (product.variants.find((v) => String(v._id) === item.variantId)?.stock ?? 0)
             : product.stock;
         if (quantity > maxStock) {
             throw ApiError_1.ApiError.badRequest(`Only ${maxStock} item(s) available`);
@@ -113,7 +110,7 @@ const cartService = {
     async removeItem(userId, itemId) {
         const cart = await Cart_model_1.Cart.findOne({ user: userId });
         if (!cart)
-            throw ApiError_1.ApiError.notFound("Cart");
+            throw ApiError_1.ApiError.notFound('Cart');
         cart.items = cart.items.filter((i) => String(i._id) !== itemId);
         await cart.save();
         return cartService.getCart(userId);
@@ -130,28 +127,28 @@ const cartController = {
     }),
     addItem: (0, catchAsync_1.catchAsync)(async (req, res) => {
         const cart = await cartService.addItem(req.user._id, req.body);
-        ApiResponse_1.ApiResponse.success(res, cart, "Item added to cart");
+        ApiResponse_1.ApiResponse.success(res, cart, 'Item added to cart');
     }),
     updateItem: (0, catchAsync_1.catchAsync)(async (req, res) => {
         const { quantity } = req.body;
         const cart = await cartService.updateItem(req.user._id, req.params.itemId, quantity);
-        ApiResponse_1.ApiResponse.success(res, cart, "Cart updated");
+        ApiResponse_1.ApiResponse.success(res, cart, 'Cart updated');
     }),
     removeItem: (0, catchAsync_1.catchAsync)(async (req, res) => {
         const cart = await cartService.removeItem(req.user._id, req.params.itemId);
-        ApiResponse_1.ApiResponse.success(res, cart, "Item removed");
+        ApiResponse_1.ApiResponse.success(res, cart, 'Item removed');
     }),
     clearCart: (0, catchAsync_1.catchAsync)(async (req, res) => {
         await cartService.clearCart(req.user._id);
-        ApiResponse_1.ApiResponse.success(res, null, "Cart cleared");
+        ApiResponse_1.ApiResponse.success(res, null, 'Cart cleared');
     }),
 };
 // Router
 exports.cartRouter = (0, express_1.Router)();
 exports.cartRouter.use(auth_middleware_1.protect); // All cart routes require auth
-exports.cartRouter.get("/", cartController.getCart);
-exports.cartRouter.post("/items", (0, validate_middleware_1.validate)(addItemSchema), cartController.addItem);
-exports.cartRouter.patch("/items/:itemId", (0, validate_middleware_1.validate)(updateItemSchema), cartController.updateItem);
-exports.cartRouter.delete("/items/:itemId", cartController.removeItem);
-exports.cartRouter.delete("/", cartController.clearCart);
+exports.cartRouter.get('/', cartController.getCart);
+exports.cartRouter.post('/items', (0, validate_middleware_1.validate)(addItemSchema), cartController.addItem);
+exports.cartRouter.patch('/items/:itemId', (0, validate_middleware_1.validate)(updateItemSchema), cartController.updateItem);
+exports.cartRouter.delete('/items/:itemId', cartController.removeItem);
+exports.cartRouter.delete('/', cartController.clearCart);
 //# sourceMappingURL=cart.controller.js.map

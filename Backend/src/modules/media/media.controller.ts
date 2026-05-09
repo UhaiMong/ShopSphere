@@ -2,7 +2,7 @@ import { Request, Response } from 'express';
 import { mediaService } from './media.service';
 import { ApiResponse } from '../../utils/ApiResponse';
 import { catchAsync } from '../../utils/catchAsync';
-import { ApiError } from '@/utils/ApiError';
+import { ApiError } from '../../utils/ApiError';
 import { CreateMediaInput, MediaQuery } from './media.validator';
 
 export const mediaController = {

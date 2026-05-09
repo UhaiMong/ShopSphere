@@ -4,8 +4,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.sendWelcomeEmail = exports.sendPasswordChangedEmail = exports.sendPasswordResetEmail = exports.sendVerificationEmail = void 0;
-const env_config_1 = require("@/config/env.config");
-const logger_1 = require("@/utils/logger");
+const env_config_1 = require("../../config/env.config");
+const logger_1 = require("../../utils/logger");
 const nodemailer_1 = __importDefault(require("nodemailer"));
 // Transporter
 let transporter;
@@ -58,7 +58,7 @@ const baseTemplate = (content) => `
 </html>
 `;
 const sendMail = async (options) => {
-    if (env_config_1.env.NODE_ENV === "test")
+    if (env_config_1.env.NODE_ENV === 'test')
         return; // Skip during tests
     try {
         await getTransporter().sendMail({
@@ -77,7 +77,7 @@ const sendVerificationEmail = async (to, name, token) => {
     const verifyUrl = `${env_config_1.env.CLIENT_URL}/verify-email/${token}`;
     await sendMail({
         to,
-        subject: "Verify your ShopSphere account",
+        subject: 'Verify your ShopSphere account',
         html: baseTemplate(`
       <h2>Welcome to ShopSphere, ${name}! 👋</h2>
       <p>Thanks for signing up. Please verify your email address to complete your registration.</p>
@@ -93,7 +93,7 @@ exports.sendVerificationEmail = sendVerificationEmail;
 const sendPasswordResetEmail = async (to, name, otp) => {
     await sendMail({
         to,
-        subject: "Reset your ShopSphere password",
+        subject: 'Reset your ShopSphere password',
         html: baseTemplate(`
       <h2>Password Reset Request</h2>
       <p>Hi ${name}, we received a request to reset your password. Use the OTP below:</p>
@@ -106,7 +106,7 @@ exports.sendPasswordResetEmail = sendPasswordResetEmail;
 const sendPasswordChangedEmail = async (to, name) => {
     await sendMail({
         to,
-        subject: "Your ShopSphere password was changed",
+        subject: 'Your ShopSphere password was changed',
         html: baseTemplate(`
       <h2>Password Changed Successfully</h2>
       <p>Hi ${name}, your password has been updated successfully.</p>
@@ -118,7 +118,7 @@ exports.sendPasswordChangedEmail = sendPasswordChangedEmail;
 const sendWelcomeEmail = async (to, name) => {
     await sendMail({
         to,
-        subject: "Welcome to ShopSphere! 🛍️",
+        subject: 'Welcome to ShopSphere! 🛍️',
         html: baseTemplate(`
       <h2>You're all set, ${name}!</h2>
       <p>Your email has been verified. Start exploring our collection.</p>

@@ -7,7 +7,7 @@ const ApiResponse_1 = require("../../utils/ApiResponse");
 const ApiError_1 = require("../../utils/ApiError");
 const catchAsync_1 = require("../../utils/catchAsync");
 const auth_middleware_1 = require("../../middleware/auth.middleware");
-const Wishlist_model_1 = require("@/models/Wishlist.model");
+const Wishlist_model_1 = require("../../models/Wishlist.model");
 // ═══════════════════════════════════════════════════════════════════════════════
 // WISHLIST
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -15,8 +15,8 @@ const wishlistController = {
     // GET /wishlist  (protected)
     getWishlist: (0, catchAsync_1.catchAsync)(async (req, res) => {
         const wishlist = await Wishlist_model_1.Wishlist.findOne({ user: req.user._id }).populate({
-            path: "products",
-            select: "name slug thumbnail price comparePrice stock avgRating isActive",
+            path: 'products',
+            select: 'name slug thumbnail price comparePrice stock avgRating isActive',
             match: { isActive: true },
         });
         ApiResponse_1.ApiResponse.success(res, {
@@ -29,7 +29,7 @@ const wishlistController = {
         const { productId } = req.params;
         const product = await Product_model_1.Product.findById(productId);
         if (!product)
-            throw ApiError_1.ApiError.notFound("Product");
+            throw ApiError_1.ApiError.notFound('Product');
         let wishlist = await Wishlist_model_1.Wishlist.findOne({ user: req.user._id });
         if (!wishlist) {
             wishlist = new Wishlist_model_1.Wishlist({ user: req.user._id, products: [] });
@@ -44,20 +44,19 @@ const wishlistController = {
         await wishlist.save();
         ApiResponse_1.ApiResponse.success(res, {
             inWishlist: !isInWishlist,
-            message: isInWishlist ? "Removed from wishlist" : "Added to wishlist",
+            message: isInWishlist ? 'Removed from wishlist' : 'Added to wishlist',
         });
     }),
     // GET /wishlist/check/:productId  (protected)
     check: (0, catchAsync_1.catchAsync)(async (req, res) => {
         const wishlist = await Wishlist_model_1.Wishlist.findOne({ user: req.user._id });
-        const inWishlist = wishlist?.products.some((p) => String(p) === req.params.productId) ??
-            false;
+        const inWishlist = wishlist?.products.some((p) => String(p) === req.params.productId) ?? false;
         ApiResponse_1.ApiResponse.success(res, { inWishlist });
     }),
 };
 exports.wishlistRouter = (0, express_1.Router)();
 exports.wishlistRouter.use(auth_middleware_1.protect);
-exports.wishlistRouter.get("/", wishlistController.getWishlist);
-exports.wishlistRouter.post("/:productId", wishlistController.toggle);
-exports.wishlistRouter.get("/check/:productId", wishlistController.check);
+exports.wishlistRouter.get('/', wishlistController.getWishlist);
+exports.wishlistRouter.post('/:productId', wishlistController.toggle);
+exports.wishlistRouter.get('/check/:productId', wishlistController.check);
 //# sourceMappingURL=wishlist.controller.js.map

@@ -15,7 +15,7 @@ const auth_middleware_1 = require("../../middleware/auth.middleware");
 const validate_middleware_1 = require("../../middleware/validate.middleware");
 const ApiResponse_2 = require("../../utils/ApiResponse");
 const zod_1 = require("zod");
-const Cart_model_1 = require("@/models/Cart.model");
+const Cart_model_1 = require("../../models/Cart.model");
 // Validators
 const addressSchema = zod_1.z.object({
     fullName: zod_1.z.string().min(2),
@@ -25,27 +25,27 @@ const addressSchema = zod_1.z.object({
     city: zod_1.z.string().min(2),
     state: zod_1.z.string().optional(),
     postalCode: zod_1.z.string().min(4),
-    country: zod_1.z.string().min(2).default("BD"),
+    country: zod_1.z.string().min(2).default('BD'),
 });
 const createOrderSchema = zod_1.z.object({
     shippingAddress: addressSchema,
-    paymentMethod: zod_1.z.enum(["stripe", "sslcommerz", "paypal", "cod"]),
+    paymentMethod: zod_1.z.enum(['stripe', 'sslcommerz', 'paypal', 'cod']),
     notes: zod_1.z.string().max(500).optional(),
 });
 const updateOrderStatusSchema = zod_1.z.object({
     status: zod_1.z.enum([
-        "pending",
-        "confirmed",
-        "processing",
-        "shipped",
-        "delivered",
-        "cancelled",
-        "refunded",
+        'pending',
+        'confirmed',
+        'processing',
+        'shipped',
+        'delivered',
+        'cancelled',
+        'refunded',
     ]),
     note: zod_1.z.string().max(300).optional(),
 });
 // Order Service
-const CANCELLABLE_STATUSES = ["pending", "confirmed"];
+const CANCELLABLE_STATUSES = ['pending', 'confirmed'];
 const SHIPPING_FEE = 100; // ৳1.00 in cents; replace with real shipping logic
 const TAX_RATE = 0; // Set your tax rate here
 exports.orderService = {
@@ -57,7 +57,7 @@ exports.orderService = {
             // 1. Load cart
             const cart = await Cart_model_1.Cart.findOne({ user: userId }).session(session);
             if (!cart || cart.items.length === 0) {
-                throw ApiError_1.ApiError.badRequest("Your cart is empty");
+                throw ApiError_1.ApiError.badRequest('Your cart is empty');
             }
             // 2. Validate products and build order items
             const orderItems = [];
@@ -68,8 +68,7 @@ exports.orderService = {
                     _id: cartItem.product,
                     isActive: true,
                     stock: { $gte: cartItem.quantity },
-                    __v: (await Product_model_1.Product.findById(cartItem.product).session(session))
-                        ?.__v,
+                    __v: (await Product_model_1.Product.findById(cartItem.product).session(session))?.__v,
                 }, {
                     $inc: { stock: -cartItem.quantity, soldCount: cartItem.quantity },
                 }, { session, new: true });
@@ -85,7 +84,7 @@ exports.orderService = {
                 orderItems.push({
                     product: product._id,
                     name: product.name,
-                    image: product.thumbnail ?? product.images[0] ?? "",
+                    image: product.thumbnail ?? product.images[0] ?? '',
                     price: cartItem.priceSnapshot,
                     quantity: cartItem.quantity,
                     variantId: cartItem.variantId,
@@ -103,7 +102,7 @@ exports.orderService = {
                     shippingAddress: input.shippingAddress,
                     payment: {
                         method: input.paymentMethod,
-                        status: input.paymentMethod === "cod" ? "pending" : "pending",
+                        status: input.paymentMethod === 'cod' ? 'pending' : 'pending',
                     },
                     subtotal,
                     tax,
@@ -146,14 +145,14 @@ exports.orderService = {
             filter.user = userId; // Users can only see their own orders
         const order = await Order_model_1.Order.findOne(filter);
         if (!order)
-            throw ApiError_1.ApiError.notFound("Order");
+            throw ApiError_1.ApiError.notFound('Order');
         return order;
     },
     //  cancelOrder
     async cancelOrder(orderId, userId) {
         const order = await Order_model_1.Order.findOne({ _id: orderId, user: userId });
         if (!order)
-            throw ApiError_1.ApiError.notFound("Order");
+            throw ApiError_1.ApiError.notFound('Order');
         if (!CANCELLABLE_STATUSES.includes(order.status)) {
             throw ApiError_1.ApiError.badRequest(`Order cannot be cancelled. Current status: ${order.status}`);
         }
@@ -164,11 +163,11 @@ exports.orderService = {
             for (const item of order.items) {
                 await Product_model_1.Product.findByIdAndUpdate(item.product, { $inc: { stock: item.quantity, soldCount: -item.quantity } }, { session });
             }
-            order.status = "cancelled";
+            order.status = 'cancelled';
             order.timeline.push({
-                status: "cancelled",
+                status: 'cancelled',
                 timestamp: new Date(),
-                note: "Cancelled by customer",
+                note: 'Cancelled by customer',
             });
             await order.save({ session });
             await session.commitTransaction();
@@ -186,7 +185,7 @@ exports.orderService = {
     async updateStatus(orderId, status, note, adminId) {
         const order = await Order_model_1.Order.findById(orderId);
         if (!order)
-            throw ApiError_1.ApiError.notFound("Order");
+            throw ApiError_1.ApiError.notFound('Order');
         order.status = status;
         order.timeline.push({
             status,
@@ -194,9 +193,9 @@ exports.orderService = {
             note,
             updatedBy: adminId,
         });
-        if (status === "delivered") {
+        if (status === 'delivered') {
             order.deliveredAt = new Date();
-            order.payment.status = "paid"; // Mark COD as paid on delivery
+            order.payment.status = 'paid'; // Mark COD as paid on delivery
         }
         await order.save();
         return order;
@@ -218,7 +217,7 @@ exports.orderService = {
         }
         const [orders, total] = await Promise.all([
             Order_model_1.Order.find(filter)
-                .populate("user", "name email")
+                .populate('user', 'name email')
                 .sort({ createdAt: -1 })
                 .skip(skip)
                 .limit(limit)
@@ -232,7 +231,7 @@ exports.orderService = {
 const orderController = {
     create: (0, catchAsync_1.catchAsync)(async (req, res) => {
         const order = await exports.orderService.createFromCart(req.user._id, req.body);
-        ApiResponse_1.ApiResponse.created(res, order, "Order placed successfully");
+        ApiResponse_1.ApiResponse.created(res, order, 'Order placed successfully');
     }),
     getUserOrders: (0, catchAsync_1.catchAsync)(async (req, res) => {
         const { orders, pagination } = await exports.orderService.getUserOrders(req.user._id, req.query);
@@ -244,7 +243,7 @@ const orderController = {
     }),
     cancel: (0, catchAsync_1.catchAsync)(async (req, res) => {
         const order = await exports.orderService.cancelOrder(req.params.id, req.user._id);
-        ApiResponse_1.ApiResponse.success(res, order, "Order cancelled successfully");
+        ApiResponse_1.ApiResponse.success(res, order, 'Order cancelled successfully');
     }),
     //  Admin
     adminGetAll: (0, catchAsync_1.catchAsync)(async (req, res) => {
@@ -265,15 +264,15 @@ const orderController = {
 exports.orderRouter = (0, express_1.Router)();
 // User routes
 exports.orderRouter.use(auth_middleware_1.protect);
-exports.orderRouter.post("/", (0, validate_middleware_1.validate)(createOrderSchema), orderController.create);
-exports.orderRouter.get("/", orderController.getUserOrders);
-exports.orderRouter.get("/:id", orderController.getOne);
-exports.orderRouter.patch("/:id/cancel", orderController.cancel);
+exports.orderRouter.post('/', (0, validate_middleware_1.validate)(createOrderSchema), orderController.create);
+exports.orderRouter.get('/', orderController.getUserOrders);
+exports.orderRouter.get('/:id', orderController.getOne);
+exports.orderRouter.patch('/:id/cancel', orderController.cancel);
 // Admin routes
 const adminRouter = (0, express_1.Router)();
 exports.adminOrderRouter = adminRouter;
-adminRouter.use(auth_middleware_1.protect, (0, auth_middleware_1.requireRole)("admin", "superadmin"));
-adminRouter.get("/", orderController.adminGetAll);
-adminRouter.get("/:id", orderController.adminGetOne);
-adminRouter.patch("/:id/status", (0, validate_middleware_1.validate)(updateOrderStatusSchema), orderController.adminUpdateStatus);
+adminRouter.use(auth_middleware_1.protect, (0, auth_middleware_1.requireRole)('admin', 'superadmin'));
+adminRouter.get('/', orderController.adminGetAll);
+adminRouter.get('/:id', orderController.adminGetOne);
+adminRouter.patch('/:id/status', (0, validate_middleware_1.validate)(updateOrderStatusSchema), orderController.adminUpdateStatus);
 //# sourceMappingURL=order.controller.js.map

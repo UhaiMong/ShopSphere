@@ -4,7 +4,7 @@ exports.mediaController = void 0;
 const media_service_1 = require("./media.service");
 const ApiResponse_1 = require("../../utils/ApiResponse");
 const catchAsync_1 = require("../../utils/catchAsync");
-const ApiError_1 = require("@/utils/ApiError");
+const ApiError_1 = require("../../utils/ApiError");
 exports.mediaController = {
     // GET /media
     getAll: (0, catchAsync_1.catchAsync)(async (req, res) => {

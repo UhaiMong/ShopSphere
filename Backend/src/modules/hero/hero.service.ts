@@ -1,5 +1,5 @@
-import { Hero, HeroSlide } from '@/models/Hero.model';
-import { ApiError } from '@/utils/ApiError';
+import { Hero, HeroSlide } from '../../models/Hero.model';
+import { ApiError } from '../../utils/ApiError';
 import { CreateHeroInput, UpdateHeroInput } from './hero.validator';
 
 export const heroService = {

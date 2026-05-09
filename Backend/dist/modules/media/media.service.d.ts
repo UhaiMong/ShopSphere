@@ -1,6 +1,6 @@
 import { PaginationMeta } from '../../utils/ApiResponse';
 import { CreateMediaInput, MediaQuery, UpdateMediaInput } from './media.validator';
-import { IMedia } from '@/models/Media.model';
+import { IMedia } from '../../models/Media.model';
 export declare const mediaService: {
     getAll(query: MediaQuery): Promise<{
         media: IMedia[];

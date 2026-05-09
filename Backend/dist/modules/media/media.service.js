@@ -9,7 +9,7 @@ const Category_model_1 = require("../../models/Category.model");
 const ApiError_1 = require("../../utils/ApiError");
 const ApiResponse_1 = require("../../utils/ApiResponse");
 const cloudinary_1 = require("../../config/cloudinary");
-const Media_model_1 = require("@/models/Media.model");
+const Media_model_1 = require("../../models/Media.model");
 exports.mediaService = {
     // Get All media
     async getAll(query) {

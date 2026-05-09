@@ -1,8 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.heroService = void 0;
-const Hero_model_1 = require("@/models/Hero.model");
-const ApiError_1 = require("@/utils/ApiError");
+const Hero_model_1 = require("../../models/Hero.model");
+const ApiError_1 = require("../../utils/ApiError");
 exports.heroService = {
     // get all active slides
     async getActivedSlides() {
