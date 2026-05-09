@@ -1,6 +1,6 @@
-import mongoose from "mongoose";
-import { logger } from "@/utils/logger.js";
-import { env } from "@/config/env.config.js";
+import mongoose from 'mongoose';
+import { logger } from '../utils/logger';
+import { env } from '../config/env.config';
 
 // Connection Options
 const MONGOOSE_OPTIONS: mongoose.ConnectOptions = {
@@ -16,7 +16,7 @@ export const connectDB = async (): Promise<void> => {
     const conn = await mongoose.connect(env.MONGO_URI, MONGOOSE_OPTIONS);
     logger.info(`MongoDB connected: ${conn.connection.host}`);
   } catch (error) {
-    logger.error("MongoDB connection failed:", error);
+    logger.error('MongoDB connection failed:', error);
     process.exit(1);
   }
 };
@@ -24,14 +24,14 @@ export const connectDB = async (): Promise<void> => {
 // Graceful Disconnect
 export const disconnectDB = async (): Promise<void> => {
   await mongoose.disconnect();
-  logger.info("MongoDB disconnected");
+  logger.info('MongoDB disconnected');
 };
 
 // Connection Event Listeners
-mongoose.connection.on("disconnected", () => {
-  logger.warn("MongoDB disconnected — attempting reconnect...");
+mongoose.connection.on('disconnected', () => {
+  logger.warn('MongoDB disconnected — attempting reconnect...');
 });
 
-mongoose.connection.on("error", (err) => {
-  logger.error("MongoDB error:", err);
+mongoose.connection.on('error', (err) => {
+  logger.error('MongoDB error:', err);
 });
