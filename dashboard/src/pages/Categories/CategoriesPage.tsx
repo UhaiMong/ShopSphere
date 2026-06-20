@@ -96,13 +96,13 @@ export const CategoriesPage = () => {
                               {cat.icon ?? "📁"}
                             </span>
                             <span className="text-xs font-semibold text-zinc-100">
-                              {cat.name}
+                              {cat?.name}
                             </span>
                           </div>
                         </td>
                         <td>
                           <span className="text-[10px] font-mono text-zinc-500">
-                            {cat.slug}
+                            {cat?.slug}
                           </span>
                         </td>
                         <td>
@@ -111,8 +111,8 @@ export const CategoriesPage = () => {
                           </span>
                         </td>
                         <td>
-                          <Badge color={cat.isActive ? "green" : "red"}>
-                            {cat.isActive ? "Active" : "Hidden"}
+                          <Badge color={cat?.isActive ? "green" : "red"}>
+                            {cat?.isActive ? "Active" : "Hidden"}
                           </Badge>
                         </td>
                         <td>
@@ -127,7 +127,7 @@ export const CategoriesPage = () => {
                             <Button
                               variant="ghost"
                               size="xs"
-                              onClick={() => setDeleteId(cat._id)}
+                              onClick={() => setDeleteId(cat?._id)}
                               className="text-red-400 hover:bg-red-500/5"
                             >
                               <Trash2 className="w-3.5 h-3.5" />

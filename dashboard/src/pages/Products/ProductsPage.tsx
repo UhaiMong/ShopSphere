@@ -133,8 +133,8 @@ export const ProductsPage = () => {
           {categories
             .filter((c) => !c.parent)
             .map((c) => (
-              <option key={c._id} value={c.slug}>
-                {c.name}
+              <option key={c._id} value={c?.slug}>
+                {c?.name}
               </option>
             ))}
         </select>
@@ -178,17 +178,17 @@ export const ProductsPage = () => {
               ) : (
                 products.map((p) => {
                   const catName =
-                    typeof p.category === "object" ? p.category.name : "";
-                  const isLow = p.stock > 0 && p.stock < 10;
-                  const isOut = p.stock === 0;
+                    typeof p?.category === "object" ? p?.category?.name : "";
+                  const isLow = p?.stock > 0 && p?.stock < 10;
+                  const isOut = p?.stock === 0;
                   return (
-                    <tr key={p._id}>
+                    <tr key={p?._id}>
                       <td>
                         <div className="flex items-center gap-3">
                           <div className="w-9 h-9 rounded-lg bg-zinc-800 overflow-hidden shrink-0">
-                            {p.thumbnail && (
+                            {p?.thumbnail && (
                               <img
-                                src={p.thumbnail}
+                                src={p?.thumbnail}
                                 alt=""
                                 className="w-full h-full object-cover"
                               />
@@ -196,11 +196,11 @@ export const ProductsPage = () => {
                           </div>
                           <div>
                             <p className="text-xs font-medium text-zinc-200">
-                              {truncate(p.name, 40)}
+                              {truncate(p?.name, 40)}
                             </p>
-                            {p.brand && (
+                            {p?.brand && (
                               <p className="text-[10px] text-zinc-600">
-                                {p.brand}
+                                {p?.brand}
                               </p>
                             )}
                           </div>
@@ -211,11 +211,11 @@ export const ProductsPage = () => {
                       </td>
                       <td>
                         <p className="text-xs font-medium text-zinc-200">
-                          {formatPrice(p.price)}
+                          {formatPrice(p?.price)}
                         </p>
-                        {p.comparePrice && (
+                        {p?.comparePrice && (
                           <p className="text-[10px] text-zinc-600 line-through">
-                            {formatPrice(p.comparePrice)}
+                            {formatPrice(p?.comparePrice)}
                           </p>
                         )}
                       </td>
@@ -230,18 +230,18 @@ export const ProductsPage = () => {
                                 : "text-zinc-300",
                           )}
                         >
-                          {p.stock} {isOut ? "· Out" : isLow ? "· Low" : ""}
+                          {p?.stock} {isOut ? "· Out" : isLow ? "· Low" : ""}
                         </span>
                       </td>
                       <td>
-                        <Badge color={p.isActive ? "green" : "red"}>
-                          {p.isActive ? "Active" : "Hidden"}
+                        <Badge color={p?.isActive ? "green" : "red"}>
+                          {p?.isActive ? "Active" : "Hidden"}
                         </Badge>
                       </td>
                       <td>
                         <Toggle
-                          checked={p.isFeatured}
-                          onChange={(v) => void toggleFeatured(p._id, v)}
+                          checked={p?.isFeatured}
+                          onChange={(v) => void toggleFeatured(p?._id, v)}
                         />
                       </td>
                       <td>
@@ -258,7 +258,7 @@ export const ProductsPage = () => {
                           <Button
                             variant="ghost"
                             size="xs"
-                            onClick={() => setDeleteId(p._id)}
+                            onClick={() => setDeleteId(p?._id)}
                             className="text-red-400 hover:bg-red-500/5"
                           >
                             <Trash2 className="w-3.5 h-3.5" />

@@ -65,11 +65,14 @@ export interface Category {
   name: string;
   slug: string;
   description?: string;
-  image?: string;
+  image?: string[];
   icon?: string;
   parent?: string | null;
   ancestors: string[];
   isActive: boolean;
+  hasVariants: boolean;
+  variantAttributes: ("size" | "color")[];
+
   sortOrder: number;
   createdAt: string;
 }
@@ -82,6 +85,7 @@ export interface ProductVariant {
   size?: string;
   stock: number;
   price?: number;
+  images?: string[];
 }
 export interface Product {
   _id: string;

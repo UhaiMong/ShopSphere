@@ -10,6 +10,8 @@ export interface ICategory extends Document {
   icon?: string;
   parent?: mongoose.Types.ObjectId | null;
   ancestors: mongoose.Types.ObjectId[];
+  hasVariants: boolean;
+  variantAttributes: ('size' | 'color')[];
   isActive: boolean;
   sortOrder: number;
   createdAt: Date;
@@ -38,13 +40,11 @@ const categorySchema = new Schema<ICategory>(
       ref: 'Category',
       default: null,
     },
-    // Materialized path: stores all ancestor IDs for efficient subtree queries.
-    // e.g. Electronics → Mobile → Smartphones  has ancestors: [Electronics._id, Mobile._id]
-    // To find all products in "Electronics" (incl sub-categories):
-    //   { ancestors: electronicsId } OR { _id: electronicsId }
     ancestors: [{ type: Schema.Types.ObjectId, ref: 'Category' }],
     isActive: { type: Boolean, default: true },
     sortOrder: { type: Number, default: 0 },
+    hasVariants: { type: Boolean, default: false },
+    variantAttributes: { type: [String], default: [] },
   },
   {
     timestamps: true,
