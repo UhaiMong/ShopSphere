@@ -40,12 +40,12 @@ export const createApp = (): Application => {
 
   // CORS
 
+  const origins = env.CLIENT_URL;
+
   app.use(
     cors({
       origin: (origin, callback) => {
-        const allowed = [env.CLIENT_URL, env.CLIENT_URL.replace('3000', '3001')];
-
-        if (!origin || allowed.includes(origin)) {
+        if (!origin || origins.includes(origin)) {
           callback(null, true);
         } else {
           callback(new Error(`CORS: Origin ${origin} not allowed`));

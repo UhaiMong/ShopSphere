@@ -20,7 +20,10 @@ const envSchema = z.object({
   JWT_REFRESH_EXPIRE: z.string().default('7d'),
 
   // Client
-  CLIENT_URL: z.string().url().default('http://localhost:3000'),
+  CLIENT_URL: z
+    .string()
+    .transform((value) => value.split(',').map((url) => url.trim()))
+    .pipe(z.array(z.string().url())),
 
   // Cloudinary
   CLOUDINARY_CLOUD_NAME: z.string().min(1, 'CLOUDINARY_CLOUD_NAME is required'),
