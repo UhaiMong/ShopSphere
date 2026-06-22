@@ -51,7 +51,7 @@ export const HeroSlider: React.FC = () => {
   /**
    * Drag Handler for Manual Interaction
    */
-  const onDragEnd = (event: any, info: any) => {
+  const onDragEnd = (info: any) => {
     const offset = info.offset.x;
     if (offset < -dragThreshold) {
       nextSlide();

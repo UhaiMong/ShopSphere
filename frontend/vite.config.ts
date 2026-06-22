@@ -30,11 +30,23 @@ export default defineConfig(({ command }) => {
       ? {
           rollupOptions: {
             output: {
-              manualChunks: {
-                vendor: ["react", "react-dom", "react-router-dom"],
-                redux: ["@reduxjs/toolkit"],
-                ui: ["lucide-react"],
-              } as any,
+              manualChunks(id) {
+                if (id.includes("node_modules")) {
+                  if (
+                    id.includes("react") ||
+                    id.includes("react-dom") ||
+                    id.includes("react-router-dom")
+                  ) {
+                    return "vendor";
+                  }
+                  if (id.includes("@reduxjs/toolkit")) {
+                    return "redux";
+                  }
+                  if (id.includes("lucide-react")) {
+                    return "ui";
+                  }
+                }
+              },
             },
           },
         }
