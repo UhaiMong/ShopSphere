@@ -82,7 +82,7 @@ export const HeroSlider: React.FC = () => {
 
   if (loading)
     return (
-      <div className="h-[70vh] w-full bg-brand-50 animate-pulse flex items-center justify-center">
+      <div className="h-[70vh] w-4xl mx-auto bg-brand-50 animate-pulse flex items-center justify-center">
         <Spinner />
       </div>
     );

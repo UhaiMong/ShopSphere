@@ -89,7 +89,10 @@ export const ProductFormModal = ({
   const [images, setImages] = useState<string[]>(product?.images ?? []);
   const [pickerMode, setPickerMode] = useState<PickerMode>(null);
   const [variants, setVariants] = useState<ProductVariant[]>(
-    product?.variants ?? [],
+    product?.variants?.map((v) => ({
+      ...v,
+      price: v?.price ? v.price / 100 : 0,
+    })) ?? [],
   );
   const [draft, setDraft] = useState<ProductVariant>(EMPTY_DRAFT);
   const [variantPickerOpen, setVariantPickerOpen] = useState(false);
@@ -110,7 +113,6 @@ export const ProductFormModal = ({
       comparePrice: product?.comparePrice
         ? product.comparePrice / 100
         : undefined,
-      // FIX: always resolve category to a plain string regardless of shape
       category: toStr(product?.category),
       brand: product?.brand ?? "",
       stock: product?.stock ?? 0,
@@ -166,10 +168,14 @@ export const ProductFormModal = ({
   const removeVariant = (id: string) =>
     setVariants((prev) => prev.filter((v) => v._id !== id));
 
-  // ── Submit
-  const onSubmit = async (data: ProductForm) => {
-    console.log("RAW RHF data →", data);
+  const toCents = (val: any) =>
+    val !== undefined && val !== null
+      ? Math.round(Number(val) * 100)
+      : undefined;
 
+  // ── Submit
+
+  const onSubmit = async (data: ProductForm) => {
     const selectedCategory = categories.find(
       (c) => toStr(c._id) === data.category,
     );
@@ -196,10 +202,13 @@ export const ProductFormModal = ({
             .filter(Boolean)
         : [],
       images,
-      variants: showVariants ? variants : [],
+      variants: showVariants
+        ? variants.map((v) => ({
+            ...v,
+            price: toCents(v.price),
+          }))
+        : [],
     };
-
-    console.log("Payload →", payload);
 
     try {
       if (isEdit && product) {
@@ -216,6 +225,7 @@ export const ProductFormModal = ({
     }
   };
 
+  console.log("variants →", variants);
   // ── Render
   return (
     <>
@@ -281,7 +291,7 @@ export const ProductFormModal = ({
             <Input
               label="Price (৳) *"
               type="number"
-              step="0.01"
+              step="1"
               error={errors.price?.message}
               hint="Enter in taka, e.g. 299.99"
               {...register("price", {

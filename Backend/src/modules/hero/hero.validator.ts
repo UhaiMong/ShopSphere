@@ -6,7 +6,7 @@ export const createHeroSchema = z.object({
   subtitle: z.string().min(2).max(200).trim(),
   offer: z.string().max(100).optional(),
   ctaText: z.string().max(100).optional(),
-  ctaLink: z.string().url().trim(),
+  ctaLink: z.string().trim(),
   backgroundImage: z.string().url().trim(),
   isActive: z.boolean().default(true),
 });
