@@ -1,4 +1,4 @@
-import { Router, Request, Response } from 'express';
+import { Router, type Request, type Response } from 'express';
 import { User } from '../../models/User.model';
 import { ApiResponse } from '../../utils/ApiResponse';
 import { ApiError } from '../../utils/ApiError';
@@ -90,8 +90,9 @@ const userController = {
   updateAddress: catchAsync(async (req: Request, res: Response) => {
     const user = await User.findById(req.user!._id);
     if (!user) throw ApiError.notFound('User');
-
-    const addr = user.addresses.id(req.params.addressId);
+    const addressId = req.params.addressId;
+    if (!addressId) throw ApiError.badRequest('Address Id is missing');
+    const addr = user.addresses.id(addressId);
     if (!addr) throw ApiError.notFound('Address');
 
     if (req.body.isDefault) {
@@ -110,7 +111,9 @@ const userController = {
     const user = await User.findById(req.user!._id);
     if (!user) throw ApiError.notFound('User');
 
-    const addr = user.addresses.id(req.params.addressId);
+    const addressId = req.params.addressId;
+    if (!addressId) throw ApiError.badRequest('Address Id is missing');
+    const addr = user.addresses.id(addressId);
     if (!addr) throw ApiError.notFound('Address');
 
     addr.deleteOne();

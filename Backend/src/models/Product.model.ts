@@ -148,7 +148,10 @@ productSchema.pre('save', async function (next) {
 
   // Auto-set thumbnail from first image
   if (this.isModified('images') && this.images.length > 0) {
-    this.thumbnail = this.images[0];
+    const thumbnail = this.images[0];
+    if (thumbnail) {
+      this.thumbnail = thumbnail;
+    }
   }
 
   next();

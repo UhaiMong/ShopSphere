@@ -1,9 +1,10 @@
 // product.controller.ts
-import { Request, Response } from 'express';
+import type { Request, Response } from 'express';
 import { productService } from './product.service';
 import { ApiResponse } from '../../utils/ApiResponse';
 import { catchAsync } from '../../utils/catchAsync';
-import { ProductQuery, CreateProductInput, UpdateProductInput } from './product.validator';
+import type { ProductQuery, CreateProductInput, UpdateProductInput } from './product.validator';
+import { ApiError } from '../../utils/ApiError';
 
 export const productController = {
   // GET /products
@@ -23,13 +24,17 @@ export const productController = {
 
   // GET /products/:idOrSlug
   getOne: catchAsync(async (req: Request, res: Response) => {
-    const product = await productService.getById(req.params.idOrSlug);
+    const productSlug = req.params.idOrSlug;
+    if (!productSlug) throw ApiError.badRequest('Order Id is missing');
+    const product = await productService.getById(productSlug);
     ApiResponse.success(res, product);
   }),
 
   // GET /products/:id/related
   getRelated: catchAsync(async (req: Request, res: Response) => {
-    const products = await productService.getRelated(req.params.id);
+    const productId = req.params.id;
+    if (!productId) throw ApiError.badRequest('Order Id is missing');
+    const products = await productService.getRelated(productId);
     ApiResponse.success(res, products);
   }),
 
@@ -43,8 +48,10 @@ export const productController = {
   // PUT /products/:id  (admin)
   update: catchAsync(async (req: Request, res: Response) => {
     const { images = [], ...rest } = req.body;
+    const productId = req.params.id;
+    if (!productId) throw ApiError.badRequest('Order Id is missing');
     const product = await productService.update(
-      req.params.id,
+      productId,
       rest as UpdateProductInput,
       images as string[],
     );
@@ -54,20 +61,26 @@ export const productController = {
   // PATCH /products/:id/stock  (admin)
   updateStock: catchAsync(async (req: Request, res: Response) => {
     const { quantity } = req.body as { quantity: number };
-    const product = await productService.updateStock(req.params.id, quantity);
+    const productId = req.params.id;
+    if (!productId) throw ApiError.badRequest('Order Id is missing');
+    const product = await productService.updateStock(productId, quantity);
     ApiResponse.success(res, product, 'Stock updated successfully');
   }),
 
   // DELETE /products/:id  (admin)
   remove: catchAsync(async (req: Request, res: Response) => {
-    await productService.softDelete(req.params.id);
+    const productId = req.params.id;
+    if (!productId) throw ApiError.badRequest('Order Id is missing');
+    await productService.softDelete(productId);
     ApiResponse.success(res, null, 'Product deleted successfully');
   }),
 
   // DELETE /products/:id/images  (admin)
   deleteImage: catchAsync(async (req: Request, res: Response) => {
     const { imageUrl } = req.body as { imageUrl: string };
-    const product = await productService.deleteImage(req.params.id, imageUrl);
+    const productId = req.params.id;
+    if (!productId) throw ApiError.badRequest('Order Id is missing');
+    const product = await productService.deleteImage(productId, imageUrl);
     ApiResponse.success(res, product, 'Image removed');
   }),
 };

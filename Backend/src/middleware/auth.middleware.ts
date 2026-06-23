@@ -1,30 +1,31 @@
-import { Request, Response, NextFunction } from "express";
-import jwt from "jsonwebtoken";
-import { env } from "../config/env.config";
-import { ApiError } from "../utils/ApiError";
-import { IUserPayload, UserRole } from "../types";
+import { env } from '../config/env.config';
+import type { Request, Response, NextFunction } from 'express';
+import jwt from 'jsonwebtoken';
+import { ApiError } from '../utils/ApiError';
+import type { IUserPayload, UserRole } from '../types';
 
 //  Protect
 
-export const protect = (
-  req: Request,
-  _res: Response,
-  next: NextFunction,
-): void => {
+export const protect = (req: Request, _res: Response, next: NextFunction): void => {
   const authHeader = req.headers.authorization;
 
-  if (!authHeader?.startsWith("Bearer ")) {
-    return next(ApiError.unauthorized("No token provided"));
+  if (!authHeader?.startsWith('Bearer ')) {
+    return next(ApiError.unauthorized('No token provided'));
   }
 
-  const token = authHeader.split(" ")[1];
+  const token = authHeader.split(' ')[1];
+
+  const secret = env.JWT_ACCESS_SECRET;
+  if (!secret) {
+    return next(ApiError.unauthorized('JWT secret is not configured'));
+  }
 
   try {
-    const decoded = jwt.verify(token, env.JWT_ACCESS_SECRET) as IUserPayload;
+    const decoded = jwt.verify(token as string, secret) as unknown as IUserPayload;
     req.user = decoded;
     next();
   } catch {
-    next(ApiError.unauthorized("Invalid or expired token"));
+    next(ApiError.unauthorized('Invalid or expired token'));
   }
 };
 
@@ -43,7 +44,7 @@ export const requireRole =
     if (!roles.includes(req.user.role)) {
       return next(
         ApiError.forbidden(
-          `Role '${req.user.role}' is not authorized. Required: ${roles.join(" | ")}`,
+          `Role '${req.user.role}' is not authorized. Required: ${roles.join(' | ')}`,
         ),
       );
     }
@@ -52,20 +53,19 @@ export const requireRole =
 
 // optionalAuth
 
-export const optionalAuth = (
-  req: Request,
-  _res: Response,
-  next: NextFunction,
-): void => {
+export const optionalAuth = (req: Request, _res: Response, next: NextFunction): void => {
   const authHeader = req.headers.authorization;
-  if (!authHeader?.startsWith("Bearer ")) return next();
+  if (!authHeader?.startsWith('Bearer ')) return next();
 
-  const token = authHeader.split(" ")[1];
+  const token = authHeader.split(' ')[1];
+  const secret = env.JWT_ACCESS_SECRET;
+  if (!secret) return next();
+
   try {
-    const decoded = jwt.verify(token, env.JWT_ACCESS_SECRET) as IUserPayload;
+    const decoded = jwt.verify(token as string, secret) as unknown as IUserPayload;
     req.user = decoded;
   } catch {
-    // Ignore invalide tokens for optional auth
+    // Ignore invalid tokens for optional auth
   }
   next();
 };

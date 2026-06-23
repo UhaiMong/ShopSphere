@@ -1,6 +1,6 @@
 import { env } from '../../config/env.config';
 import { logger } from '../../utils/logger';
-import nodemailer, { Transporter } from 'nodemailer';
+import nodemailer, { type Transporter } from 'nodemailer';
 
 // Transporter
 let transporter: Transporter;

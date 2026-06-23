@@ -1,6 +1,6 @@
-import jwt from "jsonwebtoken";
-import { env } from "../../config/env.config";
-import { IUserPayload } from "../../types";
+import { env } from '../../config/env.config';
+import jwt from 'jsonwebtoken';
+import type { IUserPayload } from '../../types';
 
 // Token Types
 export interface TokenPair {
@@ -38,8 +38,8 @@ export const verifyRefreshToken = (token: string): { _id: string } => {
 // Cookie options for refresh token
 export const REFRESH_COOKIE_OPTIONS = {
   httpOnly: true,
-  secure: env.NODE_ENV === "production",
-  sameSite: "strict" as const,
+  secure: env.NODE_ENV === 'production',
+  sameSite: 'strict' as const,
   maxAge: 7 * 24 * 60 * 60 * 1000,
-  path: "/api/v1/auth",
+  path: '/api/v1/auth',
 };

@@ -1,8 +1,4 @@
-import { Request, Response, NextFunction, RequestHandler } from "express";
-
-// catchAsync
-// Usage:
-//   router.get('/products', catchAsync(productController.getAll));
+import type { Request, Response, NextFunction, RequestHandler } from 'express';
 
 export const catchAsync = (fn: RequestHandler): RequestHandler => {
   return (req: Request, res: Response, next: NextFunction): void => {

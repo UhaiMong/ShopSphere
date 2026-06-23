@@ -1,11 +1,11 @@
 // product.service.ts
-import mongoose, { FilterQuery } from 'mongoose';
-import { Product, IProduct } from '../../models/Product.model';
+import mongoose, { type FilterQuery } from 'mongoose';
+import { Product, type IProduct } from '../../models/Product.model';
 import { Category } from '../../models/Category.model';
 import { ApiError } from '../../utils/ApiError';
-import { getPaginationMeta, PaginationMeta } from '../../utils/ApiResponse';
+import { getPaginationMeta, type PaginationMeta } from '../../utils/ApiResponse';
 import { cloudinary } from '../../config/cloudinary';
-import { CreateProductInput, UpdateProductInput, ProductQuery } from './product.validator';
+import type { CreateProductInput, UpdateProductInput, ProductQuery } from './product.validator';
 
 // Sort Map
 const SORT_MAP: Record<string, Record<string, 1 | -1>> = {

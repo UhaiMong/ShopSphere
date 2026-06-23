@@ -1,10 +1,10 @@
-import mongoose, { FilterQuery } from 'mongoose';
+import mongoose, { type FilterQuery } from 'mongoose';
 import { Category } from '../../models/Category.model';
 import { ApiError } from '../../utils/ApiError';
-import { getPaginationMeta, PaginationMeta } from '../../utils/ApiResponse';
+import { getPaginationMeta, type PaginationMeta } from '../../utils/ApiResponse';
 import { cloudinary } from '../../config/cloudinary';
-import { CreateMediaInput, MediaQuery, UpdateMediaInput } from './media.validator';
-import { IMedia, Media } from '../../models/Media.model';
+import type { CreateMediaInput, MediaQuery, UpdateMediaInput } from './media.validator';
+import { type IMedia, Media } from '../../models/Media.model';
 
 export const mediaService = {
   // Get All media

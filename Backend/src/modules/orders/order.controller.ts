@@ -1,4 +1,4 @@
-import { Router, Request, Response } from 'express';
+import { Router, type Request, type Response } from 'express';
 import mongoose from 'mongoose';
 import { Order } from '../../models/Order.model';
 import { Product } from '../../models/Product.model';
@@ -8,7 +8,7 @@ import { catchAsync } from '../../utils/catchAsync';
 import { protect, requireRole } from '../../middleware/auth.middleware';
 import { validate } from '../../middleware/validate.middleware';
 import { parsePagination, getPaginationMeta } from '../../utils/ApiResponse';
-import { OrderStatus } from '../../types';
+import { type OrderStatus } from '../../types';
 import { z } from 'zod';
 import { Cart } from '../../models/Cart.model';
 
@@ -215,12 +215,13 @@ export const orderService = {
     if (!order) throw ApiError.notFound('Order');
 
     order.status = status;
-    order.timeline.push({
+    const timelineEvent: Record<string, unknown> = {
       status,
       timestamp: new Date(),
-      note,
-      updatedBy: adminId,
-    });
+    };
+    if (note) timelineEvent.note = note;
+    if (adminId) timelineEvent.updatedBy = adminId;
+    order.timeline.push(timelineEvent as any);
 
     if (status === 'delivered') {
       order.deliveredAt = new Date();
@@ -271,12 +272,16 @@ const orderController = {
   }),
 
   getOne: catchAsync(async (req: Request, res: Response) => {
-    const order = await orderService.getOrderById(req.params.id, req.user!._id);
+    const orderId = req.params.id;
+    if (!orderId) throw ApiError.badRequest('Order id is missing');
+    const order = await orderService.getOrderById(orderId, req.user!._id);
     ApiResponse.success(res, order);
   }),
 
   cancel: catchAsync(async (req: Request, res: Response) => {
-    const order = await orderService.cancelOrder(req.params.id, req.user!._id);
+    const orderId = req.params.id;
+    if (!orderId) throw ApiError.badRequest('Order id is missing');
+    const order = await orderService.cancelOrder(orderId, req.user!._id);
     ApiResponse.success(res, order, 'Order cancelled successfully');
   }),
 
@@ -287,13 +292,17 @@ const orderController = {
   }),
 
   adminGetOne: catchAsync(async (req: Request, res: Response) => {
-    const order = await orderService.getOrderById(req.params.id);
+    const orderId = req.params.id;
+    if (!orderId) throw ApiError.badRequest('Order id is missing');
+    const order = await orderService.getOrderById(orderId);
     ApiResponse.success(res, order);
   }),
 
   adminUpdateStatus: catchAsync(async (req: Request, res: Response) => {
     const { status, note } = req.body as z.infer<typeof updateOrderStatusSchema>;
-    const order = await orderService.updateStatus(req.params.id, status, note, req.user!._id);
+    const orderId = req.params.id;
+    if (!orderId) throw ApiError.badRequest('Order id is missing');
+    const order = await orderService.updateStatus(orderId, status, note, req.user!._id);
     ApiResponse.success(res, order, `Order status updated to ${status}`);
   }),
 };

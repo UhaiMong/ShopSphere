@@ -1,6 +1,6 @@
-import { Hero, HeroSlide } from '../../models/Hero.model';
+import { Hero, type HeroSlide } from '../../models/Hero.model';
 import { ApiError } from '../../utils/ApiError';
-import { CreateHeroInput, UpdateHeroInput } from './hero.validator';
+import type { CreateHeroInput, UpdateHeroInput } from './hero.validator';
 
 export const heroService = {
   // get all active slides

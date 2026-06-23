@@ -1,4 +1,4 @@
-import express, { Application, Request, Response } from 'express';
+import { env } from './config/env.config';
 import cors from 'cors';
 import helmet from 'helmet';
 import cookieParser from 'cookie-parser';
@@ -6,9 +6,9 @@ import compression from 'compression';
 import mongoSanitize from 'express-mongo-sanitize';
 import rateLimit from 'express-rate-limit';
 
-import { env } from './config/env.config';
 import { errorHandler, notFoundHandler } from './middleware/error.middleware';
 import { httpLogger, requestId } from './middleware/requiestId.middleware';
+import express, { type Application, type Request, type Response } from 'express';
 
 // Route imports
 

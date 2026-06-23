@@ -1,4 +1,4 @@
-import { Response } from "express";
+import { type Response } from 'express';
 
 // Pagination Meta
 export interface PaginationMeta {
@@ -15,12 +15,7 @@ export interface PaginationMeta {
 // { success, message, data, pagination? }
 
 export class ApiResponse {
-  static success<T>(
-    res: Response,
-    data: T,
-    message = "Success",
-    statusCode = 200,
-  ): Response {
+  static success<T>(res: Response, data: T, message = 'Success', statusCode = 200): Response {
     return res.status(statusCode).json({
       success: true,
       message,
@@ -28,11 +23,7 @@ export class ApiResponse {
     });
   }
 
-  static created<T>(
-    res: Response,
-    data: T,
-    message = "Created successfully",
-  ): Response {
+  static created<T>(res: Response, data: T, message = 'Created successfully'): Response {
     return ApiResponse.success(res, data, message, 201);
   }
 
@@ -40,7 +31,7 @@ export class ApiResponse {
     res: Response,
     data: T[],
     pagination: PaginationMeta,
-    message = "Success",
+    message = 'Success',
   ): Response {
     return res.status(200).json({
       success: true,
@@ -56,11 +47,7 @@ export class ApiResponse {
 }
 
 // Pagination Helper
-export const getPaginationMeta = (
-  total: number,
-  page: number,
-  limit: number,
-): PaginationMeta => ({
+export const getPaginationMeta = (total: number, page: number, limit: number): PaginationMeta => ({
   total,
   page,
   limit,
@@ -75,9 +62,6 @@ export const parsePagination = (
   maxLimit = 50,
 ): { page: number; limit: number; skip: number } => {
   const page = Math.max(1, parseInt(String(query.page ?? 1), 10));
-  const limit = Math.min(
-    maxLimit,
-    Math.max(1, parseInt(String(query.limit ?? 20), 10)),
-  );
+  const limit = Math.min(maxLimit, Math.max(1, parseInt(String(query.limit ?? 20), 10)));
   return { page, limit, skip: (page - 1) * limit };
 };

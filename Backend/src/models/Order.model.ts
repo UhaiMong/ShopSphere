@@ -1,5 +1,11 @@
 import mongoose, { Schema, Model, Document } from 'mongoose';
-import { OrderStatus, PaymentStatus, PaymentMethod, IOrderItem, IAddress } from '../types/index';
+import type {
+  OrderStatus,
+  PaymentStatus,
+  PaymentMethod,
+  IOrderItem,
+  IAddress,
+} from '../types/index';
 
 // Interfaces
 export interface IOrderTimelineEvent {

@@ -1,7 +1,8 @@
-import { Request, Response } from 'express';
+import type { Request, Response } from 'express';
 import { ApiResponse } from '../../utils/ApiResponse';
 import { catchAsync } from '../../utils/catchAsync';
 import { heroService } from './hero.service';
+import { ApiError } from '../../utils/ApiError';
 
 export const heroController = {
   // GET /hero/active
@@ -24,19 +25,25 @@ export const heroController = {
 
   // PATCH /hero/:id (admin)
   updateHero: catchAsync(async (req: Request, res: Response) => {
-    const updated = await heroService.update(req.params.id, req.body);
+    const heroId = req.params.id;
+    if (!heroId) throw ApiError.badRequest('Id is missing');
+    const updated = await heroService.update(heroId, req.body);
     ApiResponse.success(res, updated, 'Hero updated successfully');
   }),
 
   // DELETE /hero/:id (soft delete, admin)
   softDelete: catchAsync(async (req: Request, res: Response) => {
-    const hero = await heroService.softDelete(req.params.id);
+    const heroId = req.params.id;
+    if (!heroId) throw ApiError.badRequest('Id is missing');
+    const hero = await heroService.softDelete(heroId);
     ApiResponse.success(res, hero, 'Hero soft deleted successfully');
   }),
 
   // DELETE /hero/:id/permanent (hard delete, admin)
   deleteHero: catchAsync(async (req: Request, res: Response) => {
-    const hero = await heroService.delete(req.params.id);
+    const heroId = req.params.id;
+    if (!heroId) throw ApiError.badRequest('Id is missing');
+    const hero = await heroService.delete(heroId);
     ApiResponse.success(res, hero, 'Hero permanently deleted');
   }),
 };

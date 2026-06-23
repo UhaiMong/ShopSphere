@@ -1,13 +1,12 @@
-import { Router, Request, Response } from 'express';
+import { Router, type Request, type Response } from 'express';
 import { Product } from '../../models/Product.model';
 import { ApiResponse } from '../../utils/ApiResponse';
 import { ApiError } from '../../utils/ApiError';
 import { catchAsync } from '../../utils/catchAsync';
 import { protect } from '../../middleware/auth.middleware';
 import { Wishlist } from '../../models/Wishlist.model';
-// ═══════════════════════════════════════════════════════════════════════════════
+
 // WISHLIST
-// ═══════════════════════════════════════════════════════════════════════════════
 
 const wishlistController = {
   // GET /wishlist  (protected)

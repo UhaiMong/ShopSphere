@@ -1,13 +1,9 @@
 import { ApiError } from '../utils/ApiError';
-import { Request, Response, NextFunction } from 'express';
+import type { Request, Response, NextFunction } from 'express';
 import { ZodSchema, ZodError } from 'zod';
 
 type ValidationTarget = 'body' | 'query' | 'params';
 
-// Validate:
-// Usage:
-//  router.post('/register', validate(registerSchema), authController.register)
-// router.get('/products', validate(productQuerySchema, 'query'), ...)
 export const validate =
   (schema: ZodSchema, target: ValidationTarget = 'body') =>
   (req: Request, _res: Response, next: NextFunction): void => {

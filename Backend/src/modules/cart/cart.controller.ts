@@ -1,4 +1,4 @@
-import { Router, Request, Response } from 'express';
+import { Router, type Request, type Response } from 'express';
 import { Product } from '../../models/Product.model';
 import { ApiResponse } from '../../utils/ApiResponse';
 import { ApiError } from '../../utils/ApiError';
@@ -76,14 +76,16 @@ const cartService = {
     );
 
     if (existingIdx >= 0) {
-      const newQty = cart.items[existingIdx].quantity + quantity;
+      const existingItem = cart.items[existingIdx];
+      if (!existingItem) throw ApiError.notFound('Cart item');
+      const newQty = existingItem.quantity + quantity;
       const maxStock = variantId
         ? (product.variants.find((v) => String(v._id) === variantId)?.stock ?? 0)
         : product.stock;
       if (newQty > maxStock) {
         throw ApiError.badRequest(`Cannot add more than ${maxStock} of this item`);
       }
-      cart.items[existingIdx].quantity = newQty;
+      existingItem.quantity = newQty;
     } else {
       cart.items.push({
         product: product._id as any,
@@ -149,12 +151,16 @@ const cartController = {
 
   updateItem: catchAsync(async (req: Request, res: Response) => {
     const { quantity } = req.body as { quantity: number };
-    const cart = await cartService.updateItem(req.user!._id, req.params.itemId, quantity);
+    const itemId = req.params.itemId;
+    if (!itemId) throw ApiError.badRequest('Item ID is required');
+    const cart = await cartService.updateItem(req.user!._id, itemId, quantity);
     ApiResponse.success(res, cart, 'Cart updated');
   }),
 
   removeItem: catchAsync(async (req: Request, res: Response) => {
-    const cart = await cartService.removeItem(req.user!._id, req.params.itemId);
+    const itemId = req.params.itemId;
+    if (!itemId) throw ApiError.badRequest('Item ID is required');
+    const cart = await cartService.removeItem(req.user!._id, itemId);
     ApiResponse.success(res, cart, 'Item removed');
   }),
 

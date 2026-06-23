@@ -1,6 +1,6 @@
 import mongoose, { Schema, Model } from 'mongoose';
 import bcrypt from 'bcryptjs';
-import { IUser, IAddress, UserRole } from '../types';
+import type { IUser, IAddress, UserRole } from '../types';
 
 // Address Sub-Schema
 const addressSchema = new Schema<IAddress>(

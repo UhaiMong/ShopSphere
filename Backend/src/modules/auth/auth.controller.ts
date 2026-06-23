@@ -1,10 +1,10 @@
-import { Request, Response } from 'express';
+import type { Request, Response } from 'express';
 import { authService } from './auth.service';
 import { ApiResponse } from '../../utils/ApiResponse';
 import { ApiError } from '../../utils/ApiError';
 import { catchAsync } from '../../utils/catchAsync';
 import { REFRESH_COOKIE_OPTIONS } from './jwt.service';
-import {
+import type {
   RegisterInput,
   LoginInput,
   ForgotPasswordInput,
@@ -80,7 +80,7 @@ export const authController = {
 
   // GET /auth/verify-email/:token
   verifyEmail: catchAsync(async (req: Request, res: Response) => {
-    const result = await authService.verifyEmail(req.params.token);
+    const result = await authService.verifyEmail(req.params.token!);
     ApiResponse.success(res, null, result.message);
   }),
 

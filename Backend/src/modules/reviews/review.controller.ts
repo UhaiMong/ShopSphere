@@ -1,4 +1,4 @@
-import { Router, Request, Response } from 'express';
+import { Router, type Request, type Response } from 'express';
 // import { Review, Wishlist } from "../../models/Cart.Review.Wishlist.model";
 import { Order } from '../../models/Order.model';
 import { Product } from '../../models/Product.model';

@@ -1,15 +1,15 @@
 import crypto from 'crypto';
 import { User } from '../../models/User.model';
 import { ApiError } from '../../utils/ApiError';
-import { IUserPayload } from '../../types';
-import { generateTokenPair, verifyRefreshToken, TokenPair } from './jwt.service';
+import type { IUserPayload } from '../../types';
+import { generateTokenPair, verifyRefreshToken, type TokenPair } from './jwt.service';
 import {
   sendVerificationEmail,
   sendPasswordResetEmail,
   sendPasswordChangedEmail,
   sendWelcomeEmail,
 } from './email.service';
-import {
+import type {
   RegisterInput,
   LoginInput,
   ForgotPasswordInput,
@@ -164,7 +164,7 @@ export const authService = {
     }
 
     user.isVerified = true;
-    user.emailVerificationToken = undefined;
+    user.set('emailVerificationToken', undefined);
     await user.save({ validateBeforeSave: false });
 
     // Send welcome email after verification
@@ -213,8 +213,8 @@ export const authService = {
 
     // Set new password (pre-save hook will hash it)
     user.passwordHash = newPassword;
-    user.passwordResetToken = undefined;
-    user.passwordResetExpires = undefined;
+    user.set('passwordResetToken', undefined);
+    user.set('passwordResetExpires', undefined);
     // Invalidate all sessions on password reset for security
     user.refreshTokens = [];
     await user.save();

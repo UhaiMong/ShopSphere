@@ -1,11 +1,11 @@
-import { Request, Response, NextFunction, ErrorRequestHandler } from 'express';
+import { env } from '../config/env.config';
+import type { Request, Response, NextFunction, ErrorRequestHandler } from 'express';
 import { Error as MongooseError } from 'mongoose';
 import { MongoServerError } from 'mongodb';
-import { JsonWebTokenError, TokenExpiredError } from 'jsonwebtoken';
+import jwt from 'jsonwebtoken';
 import { ZodError } from 'zod';
 import { ApiError } from '../utils/ApiError';
 import { logger } from '../utils/logger';
-import { env } from '../config/env.config';
 
 //  Error Handler Middleware
 
@@ -43,9 +43,9 @@ export const errorHandler: ErrorRequestHandler = (
   }
 
   // JWT Errors
-  else if (err instanceof TokenExpiredError) {
+  else if (err instanceof jwt.TokenExpiredError) {
     error = ApiError.unauthorized('Token expired. Please log in again.');
-  } else if (err instanceof JsonWebTokenError) {
+  } else if (err instanceof jwt.JsonWebTokenError) {
     error = ApiError.unauthorized('Invalid token. Please log in again.');
   }
 
