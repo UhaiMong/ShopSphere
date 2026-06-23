@@ -17,12 +17,21 @@ export const connectDB = async (): Promise<void> => {
     logger.warn('Mongo URI missing');
     return;
   }
-  try {
-    const conn = await mongoose.connect(uri, MONGOOSE_OPTIONS);
-    logger.info(`MongoDB connected: ${conn.connection.host}`);
-  } catch (error) {
-    logger.error('MongoDB connection failed:', error);
-    process.exit(1);
+
+  const MAX_RETRIES = 5;
+  let attempt = 0;
+
+  while (attempt < MAX_RETRIES) {
+    try {
+      const conn = await mongoose.connect(uri, MONGOOSE_OPTIONS);
+      logger.info(`MongoDB connected: ${conn.connection.host}`);
+      return;
+    } catch (error) {
+      attempt++;
+      logger.error(`MongoDB attempt ${attempt} failed`);
+      if (attempt >= MAX_RETRIES) process.exit(1);
+      await new Promise((res) => setTimeout(res, 3000)); // wait 3s before retry
+    }
   }
 };
 

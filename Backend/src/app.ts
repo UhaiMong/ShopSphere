@@ -13,12 +13,13 @@ import express, { type Application, type Request, type Response } from 'express'
 // Route imports
 
 import authRoutes from './modules/auth/auth.routes';
-import { cartRouter } from './modules/cart/cart.controller';
-import { orderRouter, adminOrderRouter } from './modules/orders/order.controller';
-import { userRouter, adminUserRouter } from './modules/users/user.controller';
-import { categoryRouter } from './modules/category/category.controller';
-import { reviewRouter } from './modules/reviews/review.controller';
-import { wishlistRouter } from './modules/wishlist/wishlist.controller';
+import { cartRouter } from './modules/cart/cart.route';
+import { orderRouter, adminOrderRouter } from './modules/orders/order.route';
+import { userRouter } from './modules/users/user.route';
+import { adminUserRouter } from './modules/users/admin.route';
+import { categoryRouter } from './modules/category/category.route';
+import { reviewRouter } from './modules/reviews/review.route';
+import { wishlistRouter } from './modules/wishlist/wishlist.route';
 import { productRouter } from './modules/products/product.routes';
 import { mediaRouter } from './modules/media/media.routes';
 import { heroRouter } from './modules/hero/hero.routes';

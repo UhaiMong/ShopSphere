@@ -1,25 +1,14 @@
-import { Router, type Request, type Response } from 'express';
-// import { Review, Wishlist } from "../../models/Cart.Review.Wishlist.model";
+import type { Request, Response } from 'express';
 import { Order } from '../../models/Order.model';
 import { Product } from '../../models/Product.model';
 import { ApiResponse } from '../../utils/ApiResponse';
 import { ApiError } from '../../utils/ApiError';
 import { catchAsync } from '../../utils/catchAsync';
-import { protect } from '../../middleware/auth.middleware';
-import { validate } from '../../middleware/validate.middleware';
 import { parsePagination, getPaginationMeta } from '../../utils/ApiResponse';
 import { z } from 'zod';
 import { Review } from '../../models/Review.model';
 
-// REVIEWS
-
-const createReviewSchema = z.object({
-  rating: z.number().int().min(1).max(5),
-  title: z.string().max(100).trim().optional(),
-  body: z.string().min(10).max(2000).trim(),
-});
-
-const reviewController = {
+export const reviewController = {
   // GET /reviews/:productId
   getProductReviews: catchAsync(async (req: Request, res: Response) => {
     const { page, limit, skip } = parsePagination(req.query);
@@ -111,9 +100,3 @@ const reviewController = {
     ApiResponse.success(res, null, 'Review deleted');
   }),
 };
-
-export const reviewRouter = Router();
-reviewRouter.get('/:productId', reviewController.getProductReviews);
-reviewRouter.post('/:productId', protect, validate(createReviewSchema), reviewController.create);
-reviewRouter.patch('/:id/helpful', protect, reviewController.toggleHelpful);
-reviewRouter.delete('/:id', protect, reviewController.remove);

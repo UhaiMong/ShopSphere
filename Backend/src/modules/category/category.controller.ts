@@ -3,26 +3,8 @@ import { Category } from '../../models/Category.model';
 import { ApiResponse } from '../../utils/ApiResponse';
 import { ApiError } from '../../utils/ApiError';
 import { catchAsync } from '../../utils/catchAsync';
-import { protect, requireRole } from '../../middleware/auth.middleware';
 import { z } from 'zod';
-import { validate } from '../../middleware/validate.middleware';
-
-// Validators
-const createCategorySchema = z.object({
-  name: z.string().min(2).max(80).trim(),
-  description: z.string().max(500).optional(),
-  parent: z
-    .string()
-    .regex(/^[0-9a-fA-F]{24}$/)
-    .optional(),
-  image: z.string().url().optional(),
-  icon: z.string().optional(),
-  sortOrder: z.number().int().default(0),
-  hasVariants: z.boolean().default(false),
-  variantAttributes: z.array(z.enum(['size', 'color'])).default([]),
-});
-
-const updateCategorySchema = createCategorySchema.partial();
+import type { createCategorySchema, updateCategorySchema } from './category.validator';
 
 // Service helpers
 const buildAncestors = async (parentId?: string): Promise<string[]> => {
@@ -33,7 +15,7 @@ const buildAncestors = async (parentId?: string): Promise<string[]> => {
 };
 
 //  Controller
-const categoryController = {
+export const categoryController = {
   // GET /categories  — full tree (flat list, frontend builds tree)
   getAll: catchAsync(async (_req: Request, res: Response) => {
     const categories = await Category.find({ isActive: true })
@@ -100,30 +82,3 @@ const categoryController = {
     ApiResponse.success(res, null, 'Category deleted');
   }),
 };
-
-// Router
-export const categoryRouter = Router();
-
-categoryRouter.get('/', categoryController.getAll);
-categoryRouter.get('/:slug', categoryController.getOne);
-
-categoryRouter.post(
-  '/',
-  protect,
-  requireRole('admin', 'superadmin'),
-  validate(createCategorySchema),
-  categoryController.create,
-);
-categoryRouter.put(
-  '/:id',
-  protect,
-  requireRole('admin', 'superadmin'),
-  validate(updateCategorySchema),
-  categoryController.update,
-);
-categoryRouter.delete(
-  '/:id',
-  protect,
-  requireRole('admin', 'superadmin'),
-  categoryController.remove,
-);

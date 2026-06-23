@@ -3,12 +3,11 @@ import { Product } from '../../models/Product.model';
 import { ApiResponse } from '../../utils/ApiResponse';
 import { ApiError } from '../../utils/ApiError';
 import { catchAsync } from '../../utils/catchAsync';
-import { protect } from '../../middleware/auth.middleware';
 import { Wishlist } from '../../models/Wishlist.model';
 
 // WISHLIST
 
-const wishlistController = {
+export const wishlistController = {
   // GET /wishlist  (protected)
   getWishlist: catchAsync(async (req: Request, res: Response) => {
     const wishlist = await Wishlist.findOne({ user: req.user!._id }).populate({
@@ -57,9 +56,3 @@ const wishlistController = {
     ApiResponse.success(res, { inWishlist });
   }),
 };
-
-export const wishlistRouter = Router();
-wishlistRouter.use(protect);
-wishlistRouter.get('/', wishlistController.getWishlist);
-wishlistRouter.post('/:productId', wishlistController.toggle);
-wishlistRouter.get('/check/:productId', wishlistController.check);

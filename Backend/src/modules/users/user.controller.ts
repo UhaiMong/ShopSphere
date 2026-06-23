@@ -1,38 +1,12 @@
-import { Router, type Request, type Response } from 'express';
+import type { Request, Response } from 'express';
 import { User } from '../../models/User.model';
 import { ApiResponse } from '../../utils/ApiResponse';
 import { ApiError } from '../../utils/ApiError';
 import { catchAsync } from '../../utils/catchAsync';
-import { protect, requireRole } from '../../middleware/auth.middleware';
-import { validate } from '../../middleware/validate.middleware';
-import { upload, processImages } from '../../middleware/upload.middleware';
 import { parsePagination, getPaginationMeta } from '../../utils/ApiResponse';
-import { z } from 'zod';
-
-// Validators
-const updateProfileSchema = z.object({
-  name: z.string().min(2).max(60).trim().optional(),
-  phone: z
-    .string()
-    .regex(/^\+?[\d\s\-()]{7,15}$/)
-    .optional(),
-});
-
-const addressSchema = z.object({
-  label: z.string().max(20).optional(),
-  fullName: z.string().min(2),
-  phone: z.string().min(7),
-  addressLine1: z.string().min(5),
-  addressLine2: z.string().optional(),
-  city: z.string().min(2),
-  state: z.string().optional(),
-  postalCode: z.string().min(4),
-  country: z.string().min(2).default('BD'),
-  isDefault: z.boolean().default(false),
-});
 
 //  Controller
-const userController = {
+export const userController = {
   // GET /users/me
   getProfile: catchAsync(async (req: Request, res: Response) => {
     const user = await User.findById(req.user!._id);
@@ -166,33 +140,3 @@ const userController = {
     );
   }),
 };
-
-// Router
-export const userRouter = Router();
-userRouter.use(protect);
-
-// Profile
-userRouter.get('/me', userController.getProfile);
-userRouter.patch('/me', validate(updateProfileSchema), userController.updateProfile);
-userRouter.post(
-  '/me/avatar',
-  upload.single('avatar'),
-  processImages('avatars'),
-  userController.updateAvatar,
-);
-
-// Addresses
-userRouter.post('/me/addresses', validate(addressSchema), userController.addAddress);
-userRouter.put(
-  '/me/addresses/:addressId',
-  validate(addressSchema.partial()),
-  userController.updateAddress,
-);
-userRouter.delete('/me/addresses/:addressId', userController.removeAddress);
-
-// Admin
-export const adminUserRouter = Router();
-adminUserRouter.use(protect, requireRole('admin', 'superadmin'));
-adminUserRouter.get('/', userController.adminGetAll);
-adminUserRouter.patch('/:id/role', userController.adminUpdateRole);
-adminUserRouter.patch('/:id/status', userController.adminToggleStatus);
